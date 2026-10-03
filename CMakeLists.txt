@@ -11,6 +11,7 @@ add_executable(BlazarProxy src/main.c
         src/packet/PacketPingHandshake.c
         include/packet/PacketPingHandshake.h
         src/util/String.c
-        include/util/String.h)
+        include/util/String.h
+        src/packet/PacketEntry.c)
 
 include_directories(include)

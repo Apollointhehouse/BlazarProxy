@@ -1,10 +1,11 @@
 #include "../../include/util/String.h"
 
+#include <stdint.h>
 #include <stdlib.h>
 #include <stdio.h>
 
 
-StringBE* string_create(u_int8_t* buffer, const size_t length) {
+StringBE* string_create(uint8_t* buffer, const size_t length) {
     StringBE* self = malloc(sizeof(StringBE));
     self->length = length;
     self->buffer = buffer;

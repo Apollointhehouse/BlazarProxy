@@ -6,7 +6,9 @@
 #include <pthread.h>
 #include "proxy.h"
 
+
 #include "../include/connection.h"
+#include "packet/PacketEntry.h"
 #include "packet/PacketPingHandshake.h"
 
 void proxy(const int32_t port) {
@@ -38,6 +40,8 @@ void proxy(const int32_t port) {
         exit(EXIT_FAILURE);
     }
 
+    register_packets();
+
     while (1) {
         accept_connection(server_fd, address, sizeof(address));
     }
@@ -45,7 +49,7 @@ void proxy(const int32_t port) {
     close(server_fd);
 }
 
-void accept_connection(const int32_t server_fd, struct sockaddr_in address, socklen_t addrlen) {
+static void accept_connection(const int32_t server_fd, struct sockaddr_in address, socklen_t addrlen) {
     const int32_t new_socket = accept(server_fd, (struct sockaddr *) &address, &addrlen);
 
     if (new_socket < 0) {
@@ -64,23 +68,28 @@ void accept_connection(const int32_t server_fd, struct sockaddr_in address, sock
     pthread_detach(thread);
 }
 
-void* bridge(void* arg) {
+static void* bridge(void* arg) {
     printf("bridge thread started ------------------------:\n");
     const Connection* connection = arg;
 
-    while (1) {
-        u_int8_t packet_id = connection_read_i8(connection);
-        const PacketPingHandshake packet = PacketPingHandshake_create(connection);
+    uint8_t packet_id;
 
-        string_print(packet.ping_host_string);
-        printf("\n");
-        string_print(packet.hostname);
-        printf("\n");
+    while (connection_read_i8(connection, (int8_t*)&packet_id) > 0) {
+        const PacketEntry* entry = get_packet_entry(packet_id);
 
-        PacketPingHandshake_destroy(packet);
+        if (!entry) break;
+
+        printf("--------------------------\n");
+
+        printf("packet_id: %d\n", packet_id);
+
+        const void* packet = entry->create(connection);
+
+        entry->handle((void*)packet);
+        entry->destroy((void*)packet);
     }
 
-
+    printf("bridge thread ended\n");
     connection_destroy(arg);
     return NULL;
 }

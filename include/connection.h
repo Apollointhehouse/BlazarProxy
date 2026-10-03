@@ -12,10 +12,10 @@ Connection* connection_create(int32_t new_socket);
 
 void connection_destroy(Connection* self);
 
-int8_t connection_read_i8(const Connection* self);
-int16_t connection_read_i16(const Connection* self);
-int32_t connection_read_i32(const Connection* self);
-// static int64_t connection_read_i64(const Connection* self);
+
+ssize_t connection_read_i8(const Connection* self, int8_t* out);
+ssize_t connection_read_i16(const Connection* self, int16_t* out);
+ssize_t connection_read_i32(const Connection* self, int32_t* out);
 
 StringBE* connection_read_str(const Connection* self);
 

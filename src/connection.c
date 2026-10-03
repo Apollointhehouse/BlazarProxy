@@ -1,5 +1,6 @@
 #include "../include/connection.h"
 
+#include <stdint.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/socket.h>
@@ -21,28 +22,34 @@ void connection_destroy(Connection* self) {
     free(self);
 }
 
-int8_t connection_read_i8(const Connection* self) {
+ssize_t connection_read_i8(const Connection* self, int8_t* out) {
     int8_t bytes[1];
-    read(self->socket, bytes, 1);
+    const ssize_t code = read(self->socket, bytes, 1);
 
-    return bytes[0];
+    *out = bytes[0];
+
+    return code;
 }
 
-int16_t connection_read_i16(const Connection* self) {
+ssize_t connection_read_i16(const Connection* self, int16_t* out) {
     int8_t bytes[2];
-    read(self->socket, bytes, 2);
+    const ssize_t code = read(self->socket, bytes, 2);
 
-    return (int16_t)((int16_t)bytes[0] << 8) + bytes[1];
+    *out = (int16_t)((int16_t)bytes[0] << 8) + bytes[1];
+
+    return code;
 }
 
-int32_t connection_read_i32(const Connection* self) {
+ssize_t connection_read_i32(const Connection* self, int32_t* out) {
     int8_t bytes[4];
-    read(self->socket, bytes, 4);
+    const ssize_t code = read(self->socket, bytes, 4);
 
-    return ((int32_t)bytes[0] << 24) + ((int32_t)bytes[1] << 16) + ((int32_t)bytes[2] << 8) + bytes[3];
+    *out = ((int32_t)bytes[0] << 24) + ((int32_t)bytes[1] << 16) + ((int32_t)bytes[2] << 8) + bytes[3];
+
+    return code;
 }
 
-int64_t connection_read_i64(const Connection* self) {
+ssize_t connection_read_i64(const Connection* self) {
     // int8_t bytes[1];
     // read(self->socket, bytes, 1);
     //
@@ -51,9 +58,12 @@ int64_t connection_read_i64(const Connection* self) {
 }
 
 StringBE* connection_read_str(const Connection* self) {
-    const size_t length = connection_read_i16(self) * 2;
+    int16_t length;
 
-    u_int8_t* buffer = malloc(sizeof(u_int8_t) * length);
+    connection_read_i16(self, &length);
+    length *= 2;
+
+    uint8_t* buffer = malloc(sizeof(uint8_t) * length);
 
     read(self->socket, buffer, length);
 

@@ -16,7 +16,9 @@ typedef struct PacketPingHandshake {
     int32_t port;
 } PacketPingHandshake;
 
-void PacketPingHandshake_write(Connection* connection);
-PacketPingHandshake PacketPingHandshake_create(const Connection* connection);
+void PacketPingHandshake_write(void* self, const Connection* connection);
+void* PacketPingHandshake_create(const Connection* connection);
 
-void PacketPingHandshake_destroy(PacketPingHandshake self);
+void PacketPingHandshake_destroy(void* self);
+
+void PacketPingHandshake_handle(const void* self);
