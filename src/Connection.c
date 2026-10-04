@@ -6,7 +6,6 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/socket.h>
-
 #include "util/StringUTF16.h"
 
 struct Connection {
@@ -165,4 +164,8 @@ ssize_t connection_read(const Connection* self, void *read_buffer, const size_t 
 
 ssize_t connection_write(const Connection* self, const void* data, const size_t length) {
     return send(self->socket, data, length, 0);
+}
+
+void connection_shutdown(const Connection* con) {
+    if (con) shutdown(con->socket, SHUT_RDWR);
 }

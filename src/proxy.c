@@ -120,11 +120,17 @@ static void* packet_forwarding(void* args) {
             break;
         }
 
-        entry->handle((void*)packet);
+        if (!entry->handle((void*)packet, ctx)) {
+            entry->destroy((void*)packet);
+            continue;
+        }
         connection_write_i8(sink, (int8_t)packet_id);
         entry->write((void*)packet, sink);
         entry->destroy((void*)packet);
     }
+
+    connection_shutdown(source);
+    connection_shutdown(sink);
 
     connection_ctx_destroy(ctx);
 
@@ -162,7 +168,6 @@ static void* bridge(void* arg) {
         perror("Failed to create C2S thread");
         return NULL;
     }
-    pthread_detach(c2s_thread);
 
     if (pthread_create(&s2c_thread, NULL, packet_forwarding, s2c_context)) {
         connection_ctx_destroy(s2c_context);

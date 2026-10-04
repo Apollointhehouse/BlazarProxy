@@ -7,11 +7,13 @@
 #include "util/StringUTF16.h"
 
 
-static void PacketDisconnect_handle(const void* self) {
+static ssize_t PacketDisconnect_handle(const void* self, const ConnectionContext* ctx) {
     const PacketDisconnect* packet = self;
 
     STRING_UTF16_TO_C_STR(reason, packet->reason);
     printf("PacketDisconnect(reason=\"%s\")\n", reason);
+
+    return 1;
 }
 
 static void PacketDisconnect_destroy(const void* self) {

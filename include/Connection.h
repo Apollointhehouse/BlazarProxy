@@ -24,3 +24,5 @@ ssize_t connection_write_str_utf16(const Connection* self, const StringUTF16* in
 
 ssize_t connection_read(const Connection* self, void *read_buffer, size_t length);
 ssize_t connection_write(const Connection* self, const void* data, size_t length);
+
+void connection_shutdown(const Connection* con);

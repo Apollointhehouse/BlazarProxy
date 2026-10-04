@@ -17,6 +17,7 @@ typedef struct StringUTF16 {
     const u_int8_t* (*buffer)(const struct StringUTF16* self);
 } StringUTF16;
 
+StringUTF16* string_utf16_from_c_str(const char* s, size_t n);
 StringUTF16* string_utf16_create(const u_int8_t* buffer, size_t length);
 
 #define STRING_UTF16_TO_C_STR(name, str)                  \

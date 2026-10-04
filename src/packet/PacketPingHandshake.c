@@ -4,9 +4,13 @@
 #include <stdlib.h>
 
 #include "Connection.h"
+#include "ConnectionContext.h"
+#include "packet/PacketDisconnect.h"
 #include "util/StringUTF16.h"
 
-static void PacketPingHandshake_handle(const void* self) {
+#define PING_REPLY "\xA7" "1" "\0" "32769" "\0" "8.0.1" "\0" "Proxy Server" "\0" "0" "\0" "100"
+
+static ssize_t PacketPingHandshake_handle(const void* self, const ConnectionContext* ctx) {
     const PacketPingHandshake* packet = self;
 
     STRING_UTF16_TO_C_STR(ping_host_string, packet->ping_host_string);
@@ -27,6 +31,16 @@ static void PacketPingHandshake_handle(const void* self) {
         hostname,
         packet->port
     );
+
+    const PacketEntry* entry = get_packet_entry(255);
+    PacketDisconnect* response = malloc(sizeof(PacketDisconnect));
+    response->reason = string_utf16_from_c_str(PING_REPLY, sizeof(PING_REPLY) - 1);
+
+    connection_write_i8(ctx->source, (int8_t)255);
+    entry->write(response, ctx->source);
+    entry->destroy(response);
+
+    return 0;
 }
 
 static void PacketPingHandshake_destroy(const void* self) {

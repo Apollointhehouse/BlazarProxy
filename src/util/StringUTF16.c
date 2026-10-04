@@ -66,6 +66,18 @@ static const u_int8_t* string_utf16_buffer(const StringUTF16* self) {
     return self->data->buffer;
 }
 
+StringUTF16* string_utf16_from_c_str(const char* s, const size_t n) {
+    uint8_t* buf = malloc(n * 2 + 1);
+    if (!buf) return NULL;
+    for (size_t i = 0; i < n; i++) {
+        buf[2 * i]     = 0x00;
+        buf[2 * i + 1] = (uint8_t)s[i];
+    }
+    StringUTF16* str = string_utf16_create(buf, n * 2);
+    if (!str) free(buf);
+    return str;
+}
+
 StringUTF16* string_utf16_create(const uint8_t* buffer, const size_t length) {
     StringUTF16* self = malloc(sizeof(StringUTF16));
     if (!self) return NULL;
