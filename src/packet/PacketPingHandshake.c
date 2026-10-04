@@ -18,7 +18,7 @@ PacketEntry PacketPingHandshake_vtable() {
 void* PacketPingHandshake_read(const Connection* connection) {
     int16_t temp;
 
-    PacketPingHandshake* packet = malloc(sizeof(PacketPingHandshake));
+    PacketPingHandshake* packet = calloc(1, sizeof(PacketPingHandshake));
 
     if (!packet) return NULL;
 

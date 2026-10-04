@@ -16,7 +16,7 @@ PacketEntry PacketDisconnect_vtable() {
 }
 
 void* PacketDisconnect_read(const Connection* connection) {
-    PacketDisconnect* packet = malloc(sizeof(PacketDisconnect));
+    PacketDisconnect* packet = calloc(1, sizeof(PacketDisconnect));
 
     if (!packet) return NULL;
 
@@ -47,5 +47,7 @@ void PacketDisconnect_handle(const void* self) {
 
     STRING_16BE_TO_C_STR(reason, packet->reason);
 
-    printf("disconnect reason: %s\n", reason);
+    printf("disconnect reason: ");
+    fwrite(reason, 1, packet->reason->length/2, stdout);
+    printf("\n");
 }
