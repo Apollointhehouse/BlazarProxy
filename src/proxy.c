@@ -83,7 +83,9 @@ static void* bridge(void* arg) {
 
         printf("packet_id: %d\n", packet_id);
 
-        const void* packet = entry->create(connection);
+        const void* packet = entry->read(connection);
+
+        if (!packet) break;
 
         entry->handle((void*)packet);
         entry->destroy((void*)packet);

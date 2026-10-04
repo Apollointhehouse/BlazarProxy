@@ -4,7 +4,7 @@
 
 #include <sys/types.h>
 
-#include "util/String.h"
+#include "util/String16BE.h"
 
 typedef struct Connection Connection;
 
@@ -17,7 +17,7 @@ ssize_t connection_read_i8(const Connection* self, int8_t* out);
 ssize_t connection_read_i16(const Connection* self, int16_t* out);
 ssize_t connection_read_i32(const Connection* self, int32_t* out);
 
-StringBE* connection_read_str(const Connection* self);
+ssize_t connection_read_str_16be(const Connection* self, String16BE** out);
 
 ssize_t connection_read(const Connection* self, void *read_buffer, size_t length);
 

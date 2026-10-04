@@ -5,7 +5,7 @@
 #include <unistd.h>
 #include <sys/socket.h>
 
-#include "util/String.h"
+#include "util/String16BE.h"
 
 struct Connection {
     int32_t socket;
@@ -22,42 +22,34 @@ void connection_destroy(Connection* self) {
     free(self);
 }
 
-ssize_t connection_read_i8(const Connection* self, int8_t* out) {
-    int8_t bytes[1];
-    const ssize_t code = read(self->socket, bytes, 1);
+static ssize_t connection_read_bytes_be(const Connection* self, size_t size, void** out) {
+    int8_t bytes[size];
+    const ssize_t code = read(self->socket, bytes, size);
 
-    *out = bytes[0];
+    for (int i = 0; i < size; i++) {
+        *out += bytes[i] << ((size - i - 1) * 8);
+    }
 
     return code;
+}
+
+ssize_t connection_read_i8(const Connection* self, int8_t* out) {
+    return connection_read_bytes_be(self, sizeof(int8_t), (void**)out);
 }
 
 ssize_t connection_read_i16(const Connection* self, int16_t* out) {
-    int8_t bytes[2];
-    const ssize_t code = read(self->socket, bytes, 2);
-
-    *out = (int16_t)((int16_t)bytes[0] << 8) + bytes[1];
-
-    return code;
+    return connection_read_bytes_be(self, sizeof(int16_t), (void**)out);
 }
 
 ssize_t connection_read_i32(const Connection* self, int32_t* out) {
-    int8_t bytes[4];
-    const ssize_t code = read(self->socket, bytes, 4);
-
-    *out = ((int32_t)bytes[0] << 24) + ((int32_t)bytes[1] << 16) + ((int32_t)bytes[2] << 8) + bytes[3];
-
-    return code;
+    return connection_read_bytes_be(self, sizeof(int32_t), (void**)out);
 }
 
-ssize_t connection_read_i64(const Connection* self) {
-    // int8_t bytes[1];
-    // read(self->socket, bytes, 1);
-    //
-    // return bytes[0];
-    return 0;
+ssize_t connection_read_i64(const Connection* self, int64_t* out) {
+    return connection_read_bytes_be(self, sizeof(int64_t), (void**)out);
 }
 
-StringBE* connection_read_str(const Connection* self) {
+ssize_t connection_read_str_16be(const Connection* self, String16BE** out) {
     int16_t length;
 
     connection_read_i16(self, &length);
@@ -65,11 +57,11 @@ StringBE* connection_read_str(const Connection* self) {
 
     uint8_t* buffer = malloc(sizeof(uint8_t) * length);
 
-    read(self->socket, buffer, length);
+    const ssize_t code = read(self->socket, buffer, length);
 
-    StringBE* str = string_create(buffer, length);
+    *out = string_16be_create(buffer, length);
 
-    return str;
+    return code;
 }
 
 

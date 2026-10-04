@@ -7,7 +7,8 @@ static PacketEntry packets[256];
 
 void register_packets() {
     register_packet(254, (PacketEntry) {
-        .create = PacketPingHandshake_create,
+        .read = PacketPingHandshake_read,
+        .write = PacketPingHandshake_write,
         .destroy = PacketPingHandshake_destroy,
         .handle = PacketPingHandshake_handle,
     });

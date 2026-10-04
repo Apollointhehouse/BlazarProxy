@@ -4,8 +4,9 @@
 #include "connection.h"
 
 typedef struct PacketEntry {
-    void* (*create)(const Connection* connection);
-    void (*destroy)(void* packet);
+    void* (*read)(const Connection* connection);
+    void (*write)(const void* packet, const Connection* connection);
+    void (*destroy)(const void* packet);
     void (*handle)(const void* packet);
 } PacketEntry;
 
