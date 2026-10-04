@@ -6,6 +6,15 @@
 #include "connection.h"
 #include "util/String16BE.h"
 
+PacketEntry PacketPingHandshake_vtable() {
+    return (PacketEntry) {
+        .read = PacketPingHandshake_read,
+        .write = PacketPingHandshake_write,
+        .destroy = PacketPingHandshake_destroy,
+        .handle = PacketPingHandshake_handle,
+    };
+}
+
 void* PacketPingHandshake_read(const Connection* connection) {
     int16_t temp;
 
@@ -71,15 +80,4 @@ void PacketPingHandshake_handle(const void* self) {
         hostname,
         packet->port
     );
-
-    // printf("payload: %d\n", packet->payload);
-    // printf("identifier: %d\n", packet->identifier);
-    // printf("ping_host_string: ");
-    // string_print(packet->ping_host_string);
-    // printf("\n");
-    // printf("protocol_version: %d\n", packet->protocol_version);
-    // printf("hostname: ");
-    // string_print(packet->hostname);
-    // printf("\n");
-    // printf("port: %d\n", packet->port);
 }

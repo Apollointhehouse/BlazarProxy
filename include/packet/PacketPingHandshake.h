@@ -5,6 +5,7 @@
 #include <stdint.h>
 
 #include "connection.h"
+#include "PacketEntry.h"
 #include "util/String16BE.h"
 
 typedef struct PacketPingHandshake {
@@ -15,6 +16,8 @@ typedef struct PacketPingHandshake {
     String16BE* hostname;
     int32_t port;
 } PacketPingHandshake;
+
+PacketEntry PacketPingHandshake_vtable();
 
 void* PacketPingHandshake_read(const Connection* connection);
 void PacketPingHandshake_write(const void* self, const Connection* connection);

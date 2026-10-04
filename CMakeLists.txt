@@ -14,6 +14,7 @@ add_executable(BlazarProxy src/main.c
         include/util/String16BE.h
         src/packet/PacketEntry.c
         src/ConnectionContext.c
-        include/ConnectionContext.h)
+        include/ConnectionContext.h
+        src/packet/PacketDisconnect.c)
 
 include_directories(include)

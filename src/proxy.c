@@ -111,11 +111,17 @@ static void* packet_forwarding(void* args) {
         printf("packet_id: %d\n", packet_id);
 
         const PacketEntry* entry = get_packet_entry(packet_id);
-        if (!entry) break;
+        if (!entry) {
+            printf("Missing packet entry for id: %d\n", packet_id);
+            break;
+        }
 
         const void* packet = entry->read(source);
 
-        if (!packet) break;
+        if (!packet) {
+            printf("Failed to read packet id: %d\n", packet_id);
+            break;
+        }
 
         entry->handle((void*)packet);
         connection_write_i8(sink, (int8_t)packet_id);
@@ -169,6 +175,9 @@ static void* bridge(void* arg) {
 
     pthread_join(c2s_thread, NULL);
     pthread_join(s2c_thread, NULL);
+
+    connection_destroy(client_con);
+    connection_destroy(server_con);
 
     printf("bridge thread ended\n");
     return NULL;
