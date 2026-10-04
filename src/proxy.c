@@ -8,13 +8,10 @@
 #include <string.h>
 #include "proxy.h"
 
-#include <errno.h>
-
 
 #include "ConnectionContext.h"
-#include "../include/connection.h"
+#include "../include/Connection.h"
 #include "packet/PacketEntry.h"
-#include "packet/PacketPingHandshake.h"
 
 void proxy(const int32_t port) {
     int32_t server_fd;

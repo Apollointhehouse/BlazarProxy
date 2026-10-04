@@ -1,5 +1,5 @@
 #pragma once
-#include "connection.h"
+#include "Connection.h"
 
 typedef struct ConnectionContext {
     const Connection* sink;

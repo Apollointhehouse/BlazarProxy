@@ -3,8 +3,47 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "connection.h"
-#include "util/String16BE.h"
+#include "Connection.h"
+#include "util/StringUTF16.h"
+
+
+static void PacketDisconnect_handle(const void* self) {
+    const PacketDisconnect* packet = self;
+
+    STRING_UTF16_TO_C_STR(reason, packet->reason);
+
+    printf("disconnect reason: ");
+    fwrite(reason, 1, packet->reason->size(packet->reason)/2, stdout);
+    printf("\n");
+}
+
+static void PacketDisconnect_destroy(const void* self) {
+    const PacketDisconnect* packet = self;
+    if (packet->reason) packet->reason->destroy(packet->reason);
+    free((void*)packet);
+}
+
+static void* PacketDisconnect_read(const Connection* connection) {
+    PacketDisconnect* packet = calloc(1, sizeof(PacketDisconnect));
+
+    if (!packet) return NULL;
+
+    if (
+        connection_read_str_utf16(connection, &packet->reason) <= 0
+    ) {
+        printf("failed to read str disconnect packet \n");
+        PacketDisconnect_destroy(packet);
+        return NULL;
+    }
+
+    return packet;
+}
+
+static void PacketDisconnect_write(const void* self, const Connection* connection) {
+    const PacketDisconnect* packet = self;
+
+    connection_write_str_utf16(connection, packet->reason);
+}
 
 PacketEntry PacketDisconnect_vtable() {
     return (PacketEntry) {
@@ -13,41 +52,4 @@ PacketEntry PacketDisconnect_vtable() {
         .destroy = PacketDisconnect_destroy,
         .handle = PacketDisconnect_handle,
     };
-}
-
-void* PacketDisconnect_read(const Connection* connection) {
-    PacketDisconnect* packet = calloc(1, sizeof(PacketDisconnect));
-
-    if (!packet) return NULL;
-
-    if (
-        connection_read_str_16be(connection, &packet->reason) <= 0
-    ) {
-        PacketDisconnect_destroy(packet);
-        return NULL;
-    }
-
-    return packet;
-}
-
-void PacketDisconnect_write(const void* self, const Connection* connection) {
-    const PacketDisconnect* packet = self;
-
-    connection_write_str_16be(connection, packet->reason);
-}
-
-void PacketDisconnect_destroy(const void* self) {
-    const PacketDisconnect* packet = self;
-    if (packet->reason) string_16be_destroy(packet->reason);
-    free((void*)packet);
-}
-
-void PacketDisconnect_handle(const void* self) {
-    const PacketDisconnect* packet = self;
-
-    STRING_16BE_TO_C_STR(reason, packet->reason);
-
-    printf("disconnect reason: ");
-    fwrite(reason, 1, packet->reason->length/2, stdout);
-    printf("\n");
 }

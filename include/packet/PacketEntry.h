@@ -1,7 +1,7 @@
 #pragma once
 #include <stdint.h>
 
-#include "connection.h"
+#include "Connection.h"
 
 typedef struct PacketEntry {
     void* (*read)(const Connection* connection);
