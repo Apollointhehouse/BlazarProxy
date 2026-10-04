@@ -15,7 +15,10 @@ void register_packets() {
 }
 
 PacketEntry* get_packet_entry(const uint8_t id) {
-    return &packets[id];
+    PacketEntry* entry = &packets[id];
+    if (!entry->read) return NULL;
+
+    return entry;
 }
 
 void register_packet(const uint8_t id, const PacketEntry packet) {

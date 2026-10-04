@@ -4,12 +4,13 @@
 
 typedef struct String16BE {
     size_t length;
-    u_int8_t* buffer;
+    const u_int8_t* buffer;
 } String16BE;
 
-String16BE* string_16be_create(u_int8_t* buffer, size_t length);
+String16BE* string_16be_create(const u_int8_t* buffer, size_t length);
 void string_16be_destroy(String16BE* self);
 
+size_t string_16be_length(const String16BE* self);
 void string_16be_print(const String16BE* self);
 void string_16be_to_c_string(const String16BE* self, char* buffer);
 

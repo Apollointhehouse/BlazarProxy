@@ -30,14 +30,17 @@ void* PacketPingHandshake_read(const Connection* connection) {
 }
 
 void PacketPingHandshake_write(const void* self, const Connection* connection) {
-    // connection_write(connection, data);
-    // sink.writeByte(payload.toByte())
-    // sink.writeByte(identifier.toByte())
-    // sink.writeJavaStringUTF16BE(pingHostString)
-    // sink.writeShort((3 + StandardCharsets.UTF_16BE.encode(pingHostString).array().size + 4).toShort())
-    // sink.writeByte(protocolVersion.toByte())
-    // sink.writeJavaStringUTF16BE(hostname)
-    // sink.writeInt(port)
+    const PacketPingHandshake* packet = self;
+
+    STRING_16BE_TO_C_STR(ping_host_string, packet->ping_host_string);
+
+    connection_write_i8(connection, (int8_t)packet->payload);
+    connection_write_i8(connection, (int8_t)packet->identifier);
+    connection_write_str_16be(connection, packet->ping_host_string);
+    connection_write_i16(connection, 3 + (int16_t)packet->ping_host_string->length + 4);
+    connection_write_i8(connection, (int8_t)packet->protocol_version);
+    connection_write_str_16be(connection, packet->hostname);
+    connection_write_i32(connection, packet->port);
 }
 
 void PacketPingHandshake_destroy(const void* self) {
@@ -68,6 +71,7 @@ void PacketPingHandshake_handle(const void* self) {
         hostname,
         packet->port
     );
+
     // printf("payload: %d\n", packet->payload);
     // printf("identifier: %d\n", packet->identifier);
     // printf("ping_host_string: ");
