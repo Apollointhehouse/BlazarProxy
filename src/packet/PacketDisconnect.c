@@ -11,10 +11,7 @@ static void PacketDisconnect_handle(const void* self) {
     const PacketDisconnect* packet = self;
 
     STRING_UTF16_TO_C_STR(reason, packet->reason);
-
-    printf("disconnect reason: ");
-    fwrite(reason, 1, packet->reason->size(packet->reason)/2, stdout);
-    printf("\n");
+    printf("PacketDisconnect(reason=\"%s\")\n", reason);
 }
 
 static void PacketDisconnect_destroy(const void* self) {
@@ -31,7 +28,7 @@ static void* PacketDisconnect_read(const Connection* connection) {
     if (
         connection_read_str_utf16(connection, &packet->reason) <= 0
     ) {
-        printf("failed to read str disconnect packet \n");
+        perror("failed to read str disconnect packet \n");
         PacketDisconnect_destroy(packet);
         return NULL;
     }

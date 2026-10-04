@@ -16,21 +16,46 @@ static void string_utf16_destroy(StringUTF16* self) {
     free(self);
 }
 
-static void string_utf16_print(const StringUTF16* self) {
-    for (size_t i = 0; i + 1 < self->data->length; i += 2) {
-        putchar(self->data->buffer[i + 1]);
+static size_t string_utf16_to_ascii(const StringUTF16* self, char* dst, const size_t cap) {
+    if (!dst || cap == 0) return 0;
+    dst[0] = '\0';
+    if (!self || !self->data || !self->data->buffer) return 0;
+
+    const uint8_t* src = self->data->buffer;
+    const size_t len = self->data->length;
+
+    size_t out = 0;
+    for (size_t i = 0; i + 1 < len && out + 1 < cap; i += 2) {
+        const uint8_t hi = src[i];
+        const uint8_t lo = src[i + 1];
+
+        if (hi == 0x00 && lo == 0xA7) {
+            i += 2;
+            continue;
+        }
+
+        char c;
+        if (hi == 0x00 && lo >= 0x20 && lo <= 0x7E) c = (char)lo;
+        else if (hi == 0x00 && lo == 0x00) c = '|';
+        else c = '?';
+
+        dst[out++] = c;
     }
+    dst[out] = '\0';
+    return out;
 }
 
 static void string_utf16_to_c_string(const StringUTF16* self, char* buffer) {
-    if (!buffer) return;
-    if (self->data->length <= 0) return;
+    string_utf16_to_ascii(self, buffer, self->data->length / 2 + 1);
+}
 
-    size_t out = 0;
-    for (size_t i = 0; i + 1 < self->data->length; i += 2) {
-        buffer[out++] = (char)self->data->buffer[i + 1];
-    }
-    buffer[out] = '\0';
+static void string_utf16_print(const StringUTF16* self) {
+    const size_t cap = self->data->length / 2 + 1;
+    char* tmp = malloc(cap);
+    if (!tmp) return;
+    string_utf16_to_ascii(self, tmp, cap);
+    fputs(tmp, stdout);
+    free(tmp);
 }
 
 static size_t string_utf16_size(const StringUTF16* self) {

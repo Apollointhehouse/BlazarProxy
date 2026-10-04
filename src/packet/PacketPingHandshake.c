@@ -13,13 +13,13 @@ static void PacketPingHandshake_handle(const void* self) {
     STRING_UTF16_TO_C_STR(hostname, packet->hostname);
 
     printf(
-        "handle PacketPingHandshake:\n"
-        "payload: %d\n"
-        "identifier: %d\n"
-        "ping_host_string: %s\n"
-        "protocol_version: %d\n"
-        "hostname: %s\n"
-        "port: %d\n",
+        "PacketPingHandshake("
+        "payload=%d, "
+        "identifier=%d, "
+        "ping_host_string=\"%s\", "
+        "protocol_version=%d, "
+        "hostname=%s, "
+        "port=%d)\n",
         packet->payload,
         packet->identifier,
         ping_host_string,
