@@ -145,55 +145,57 @@ static void* packet_forwarding(void* nonnull args) {
 
 static void* bridge(void* nonnull arg) {
     const Connection* client_con = arg;
+    Connection* nullable server_con = NULL;
+    ConnectionContext* nullable c2s_context = NULL;
+    ConnectionContext* nullable s2c_context = NULL;
+    pthread_t c2s_thread, s2c_thread;
+    int c2s_started = 0;
+
     printf("Accepted Connection!\n");
 
     const int32_t server_fd = connect_to_server("btanarchy.com", "25565");
-
     if (server_fd < 0) {
-        perror("connect to btanarchy.com failed");
-        exit(EXIT_FAILURE);
+        fprintf(stderr, "connect to btanarchy.com failed\n");
+        goto cleanup;
     }
 
-    const Connection* server_con = connection_create(server_fd);
-
+    server_con = connection_create(server_fd);
     if (!server_con) {
-        perror("connection_create failed");
-        exit(EXIT_FAILURE);
+        fprintf(stderr, "connection_create failed\n");
+        close(server_fd);
+        goto cleanup;
     }
 
-    pthread_t c2s_thread;
-    pthread_t s2c_thread;
-
-    ConnectionContext* c2s_context = connection_ctx_create(client_con, server_con);
-    if (!c2s_context) {
-        perror("Failed to create C2S connection context");
-        return NULL;
-    }
-
-    ConnectionContext* nullable s2c_context = connection_ctx_create(server_con, client_con);
-
-    if (!s2c_context) {
-        perror("Failed to create S2C connection context");
-        return NULL;
+    c2s_context = connection_ctx_create(client_con, server_con);
+    s2c_context = connection_ctx_create(server_con, client_con);
+    if (!c2s_context || !s2c_context) {
+        fprintf(stderr, "Failed to create connection contexts\n");
+        goto cleanup;
     }
 
     if (pthread_create(&c2s_thread, NULL, packet_forwarding, c2s_context)) {
-        connection_ctx_destroy(c2s_context);
-        perror("Failed to create C2S thread");
-        return NULL;
+        fprintf(stderr, "Failed to create C2S thread\n");
+        goto cleanup;
     }
+    c2s_started = 1;
+    c2s_context = NULL;
 
     if (pthread_create(&s2c_thread, NULL, packet_forwarding, s2c_context)) {
-        connection_ctx_destroy(s2c_context);
-        perror("Failed to create C2S thread");
-        return NULL;
+        fprintf(stderr, "Failed to create S2C thread\n");
+        connection_shutdown(client_con);
+        connection_shutdown(server_con);
+        goto cleanup;
     }
+    s2c_context = NULL;
 
-    pthread_join(c2s_thread, NULL);
     pthread_join(s2c_thread, NULL);
 
+    cleanup:
+    if (c2s_started) pthread_join(c2s_thread, NULL);
+    if (c2s_context) connection_ctx_destroy(c2s_context);
+    if (s2c_context) connection_ctx_destroy(s2c_context);
+    if (server_con) connection_destroy(server_con);
     connection_destroy(client_con);
-    connection_destroy(server_con);
 
     printf("Connection Closed\n");
     return NULL;
