@@ -112,7 +112,7 @@ static void* packet_forwarding(void* args) {
 
         const PacketFactory* factory = get_packet_factory(packet_id);
         if (!factory) {
-            printf("Missing packet facotry for id: %d\n", packet_id);
+            printf("Missing packet factory for id: %d\n", packet_id);
             break;
         }
 

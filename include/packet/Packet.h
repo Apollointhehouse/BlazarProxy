@@ -11,4 +11,4 @@ typedef struct Packet {
 
 void register_packets();
 const PacketFactory* get_packet_factory(uint8_t id);
-void register_packet(uint8_t id, const PacketFactory* packet_vtable);
+void register_packet(uint8_t id, const PacketFactory* factory);

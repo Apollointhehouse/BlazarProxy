@@ -11,6 +11,7 @@ void register_packets() {
 
 const PacketFactory* get_packet_factory(const uint8_t id) {
     const PacketFactory* factory = packets[id];
+    if (!factory) return NULL;
     if (!factory->read) return NULL;
 
     return factory;
