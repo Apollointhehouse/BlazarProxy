@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include "nullability.h"
 
-char* uuid_to_c_str(const UUID uuid, char *nonnull out_str) {
+char* nullable uuid_to_c_str(const UUID uuid, char *nonnull out_str) {
     if (out_str == NULL) {
         return NULL;
     }

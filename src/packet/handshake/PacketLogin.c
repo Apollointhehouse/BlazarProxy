@@ -17,13 +17,12 @@ static ssize_t PacketLogin_handle(const Packet* nonnull packet, const Connection
 
     UUID_TO_C_STR(uuid, data->uuid);
 
-
     printf(
         "PacketLogin("
         "proto_or_player_id=%d, "
-        "username=%s, "
+        "username=\"%s\", "
         "uuid=\"%s\", "
-        "public_key=%s, "
+        "public_key=\"%s\", "
         "world_seed=%"PRId64", "
         "dimension_id=%d, "
         "world_type_id=%d, "

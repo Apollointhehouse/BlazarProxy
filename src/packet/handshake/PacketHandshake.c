@@ -11,7 +11,7 @@ static ssize_t PacketHandshake_handle(const Packet* nonnull packet, const Connec
 
     STRING_UTF8_TO_C_STR(username, data->username);
 
-    printf("PacketHandshake(username=%s)\n",username);
+    printf("PacketHandshake(username=\"%s\")\n",username);
 
     return 1;
 }

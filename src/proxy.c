@@ -150,6 +150,7 @@ static void* bridge(void* nonnull arg) {
     ConnectionContext* nullable s2c_context = NULL;
     pthread_t c2s_thread, s2c_thread;
     int c2s_started = 0;
+    int s2c_started = 0;
 
     printf("Accepted Connection!\n");
 
@@ -186,11 +187,13 @@ static void* bridge(void* nonnull arg) {
         connection_shutdown(server_con);
         goto cleanup;
     }
+    s2c_started = 1;
     s2c_context = NULL;
 
     pthread_join(s2c_thread, NULL);
 
     cleanup:
+    if (s2c_started) pthread_join(s2c_thread, NULL);
     if (c2s_started) pthread_join(c2s_thread, NULL);
     if (c2s_context) connection_ctx_destroy(c2s_context);
     if (s2c_context) connection_ctx_destroy(s2c_context);

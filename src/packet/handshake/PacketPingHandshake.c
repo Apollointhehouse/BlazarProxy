@@ -21,7 +21,7 @@ static ssize_t PacketPingHandshake_handle(const Packet* nonnull packet, const Co
         "identifier=%d, "
         "ping_host_string=\"%s\", "
         "protocol_version=%d, "
-        "hostname=%s, "
+        "hostname=\"%s\", "
         "port=%d)\n",
         data->payload,
         data->identifier,
