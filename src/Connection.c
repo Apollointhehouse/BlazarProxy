@@ -7,13 +7,10 @@
 #include "util/StringUTF16.h"
 #include "Connection.h"
 #include "util/StringUTF8.h"
-
-struct Connection {
-    int32_t socket;
-};
+#include "util/UUID.h"
 
 Connection* nullable connection_create(const int32_t new_socket) {
-    Connection* args = malloc(sizeof(struct Connection));
+    Connection* args = malloc(sizeof(Connection));
     if (!args) return NULL;
     args->socket = new_socket;
     return args;
@@ -111,10 +108,15 @@ ssize_t connection_read_str_utf16(const Connection* nonnull self, StringUTF16*no
     }
     length *= 2;
 
-    if (length <= 0) {
+    if (length < 0) {
         errno = EINVAL;
         perror("Failed to read string 16BE length (Error)");
         return 0;
+    }
+
+    if (length == 0) {
+        *out = string_utf16_create(calloc(0,0), 0);
+        return code;
     }
 
     uint8_t* buffer = calloc(length, sizeof(uint8_t));
@@ -131,7 +133,8 @@ ssize_t connection_read_str_utf16(const Connection* nonnull self, StringUTF16*no
     }
 
     *out = string_utf16_create(buffer, length);
-    return code;
+
+    return code + 2;
 }
 
 ssize_t connection_read_str_utf8(const Connection* nonnull self, StringUTF8*nonnull *nonnull out) {
@@ -139,34 +142,44 @@ ssize_t connection_read_str_utf8(const Connection* nonnull self, StringUTF8*nonn
     ssize_t code;
 
     if ((code = connection_read_i16(self, &length)) <= 0) {
-        if (code < 0) {
-            perror("Failed to read str utf-8 BE length (Error)");
-        } else {
-            fprintf(stderr, "Client disconnected while reading string length.\n");
-        }
         return code;
     }
 
-    if (length <= 0) {
+    if (length < 0) {
         errno = EINVAL;
-        perror("Failed to read string utf-8 BE length (Error)");
-        return 0;
+        perror("Failed to read string utf-8 BE length (Invalid negative size)");
+        return -1;
+    }
+
+    if (length == 0) {
+        *out = string_utf8_create(calloc(0, 0), 0);
+        return code;
     }
 
     uint8_t* buffer = calloc(length, sizeof(uint8_t));
     if (!buffer) return -1;
 
     if ((code = connection_read_all(self, length, buffer)) <= 0) {
-        if (code < 0) {
-            perror("Failed to read str utf-8 BE bytes (Error)");
-        } else {
-            fprintf(stderr, "Client disconnected while reading string bytes.\n");
-        }
         free(buffer);
         return code;
     }
 
     *out = string_utf8_create(buffer, length);
+
+    return code + 2;
+}
+
+ssize_t connection_read_uuid(const Connection* nonnull self, UUID* out) {
+    int64_t msb;
+    int64_t lsb;
+    ssize_t code;
+
+    if ((code = connection_read_i64(self, &msb)) <= 0) return code;
+    if ((code = connection_read_i64(self, &lsb)) <= 0) return code;
+
+    out->data[0] = (uint64_t)msb;
+    out->data[1] = (uint64_t)lsb;
+
     return code;
 }
 
@@ -180,6 +193,10 @@ ssize_t connection_write_i16(const Connection* nonnull self, const int16_t in) {
 
 ssize_t connection_write_i32(const Connection* nonnull self, const int32_t in) {
     return connection_write_bytes_be(self, sizeof(int32_t), in);
+}
+
+ssize_t connection_write_i64(const Connection* nonnull self, const int64_t in) {
+    return connection_write_bytes_be(self, sizeof(int64_t), in);
 }
 
 ssize_t connection_write_str_utf16(const Connection* nonnull self, const StringUTF16* nonnull in) {
@@ -198,6 +215,17 @@ ssize_t connection_write_str_utf8(const Connection* nonnull self, const StringUT
     connection_write_i16(self, length);
 
     const ssize_t code = write(self->socket, in->buffer(in), length);
+
+    return code;
+}
+
+ssize_t connection_write_uuid(const Connection* nonnull self, const UUID in) {
+    const uint64_t msb = in.data[0];
+    const uint64_t lsb = in.data[1];
+    ssize_t code;
+
+    if ((code = connection_write_i64(self, (int64_t)msb)) <= 0) return code;
+    if ((code = connection_write_i64(self, (int64_t)lsb)) <= 0) return code;
 
     return code;
 }
