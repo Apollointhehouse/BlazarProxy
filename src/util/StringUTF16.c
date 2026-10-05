@@ -1,5 +1,4 @@
-#include "../../include/util/StringUTF16.h"
-
+#include "util/StringUTF16.h"
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdio.h>

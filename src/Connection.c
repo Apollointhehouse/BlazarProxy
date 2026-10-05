@@ -1,5 +1,3 @@
-#include "../include/Connection.h"
-
 #include <errno.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -7,6 +5,8 @@
 #include <unistd.h>
 #include <sys/socket.h>
 #include "util/StringUTF16.h"
+#include "Connection.h"
+#include "util/StringUTF8.h"
 
 struct Connection {
     int32_t socket;
@@ -137,6 +137,42 @@ ssize_t connection_read_str_utf16(const Connection* self, StringUTF16** out) {
     return code;
 }
 
+ssize_t connection_read_str_utf8(const Connection* self, StringUTF8** out) {
+    int16_t length;
+    ssize_t code;
+
+    if ((code = connection_read_i16(self, &length)) <= 0) {
+        if (code < 0) {
+            perror("Failed to read str utf-8 BE length (Error)");
+        } else {
+            fprintf(stderr, "Client disconnected while reading string length.\n");
+        }
+        return code;
+    }
+
+    if (length <= 0) {
+        errno = EINVAL;
+        perror("Failed to read string utf-8 BE length (Error)");
+        return 0;
+    }
+
+    uint8_t* buffer = calloc(length, sizeof(uint8_t));
+    if (!buffer) return -1;
+
+    if ((code = connection_read_all(self, length, buffer)) <= 0) {
+        if (code < 0) {
+            perror("Failed to read str utf-8 BE bytes (Error)");
+        } else {
+            fprintf(stderr, "Client disconnected while reading string bytes.\n");
+        }
+        free(buffer);
+        return code;
+    }
+
+    *out = string_utf8_create(buffer, length);
+    return code;
+}
+
 ssize_t connection_write_i8(const Connection* self, const int8_t in) {
     return connection_write_bytes_be(self, sizeof(int8_t), &in);
 }
@@ -155,6 +191,16 @@ ssize_t connection_write_str_utf16(const Connection* self, const StringUTF16* in
     connection_write_i16(self, length);
 
     const ssize_t code = write(self->socket, in->buffer(in), length * 2);
+
+    return code;
+}
+
+ssize_t connection_write_str_utf8(const Connection* self, const StringUTF8* in) {
+    const int16_t length = (int16_t)in->size(in);
+
+    connection_write_i16(self, length);
+
+    const ssize_t code = write(self->socket, in->buffer(in), length);
 
     return code;
 }

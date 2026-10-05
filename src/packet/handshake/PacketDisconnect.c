@@ -1,8 +1,6 @@
-#include "packet/PacketDisconnect.h"
-
+#include "packet/handshake/PacketDisconnect.h"
 #include <stdio.h>
 #include <stdlib.h>
-
 #include "Connection.h"
 #include "packet/PacketFactory.h"
 #include "util/StringUTF16.h"

@@ -8,19 +8,23 @@ add_executable(BlazarProxy src/main.c
         include/proxy.h
         src/Connection.c
         include/Connection.h
-        src/packet/PacketPingHandshake.c
-        include/packet/PacketPingHandshake.h
+        src/packet/handshake/PacketPingHandshake.c
+        include/packet/handshake/PacketPingHandshake.h
         src/util/StringUTF16.c
         include/util/StringUTF16.h
         src/packet/Packet_VTable.c
         include/packet/Packet_VTable.h
         src/ConnectionContext.c
         include/ConnectionContext.h
-        src/packet/PacketDisconnect.c
+        src/packet/handshake/PacketDisconnect.c
         include/packet/PacketFactory.h
         src/packet/PacketFactory.c
         src/packet/Packet.c
-        include/packet/Packet.h)
+        include/packet/Packet.h
+        src/packet/handshake/PacketHandshake.c
+        include/packet/handshake/PacketHandshake.h
+        include/util/StringUTF8.h
+        src/util/StringUTF8.c)
 
 include_directories(include)
 

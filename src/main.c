@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "../include/proxy.h"
+#include "proxy.h"
 
 #define PORT 25565
 

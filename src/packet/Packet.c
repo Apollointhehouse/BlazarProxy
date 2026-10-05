@@ -1,10 +1,12 @@
 #include "packet/Packet.h"
-#include "packet/PacketDisconnect.h"
-#include "packet/PacketPingHandshake.h"
+#include "packet/handshake/PacketDisconnect.h"
+#include "packet/handshake/PacketPingHandshake.h"
+#include "packet/handshake/PacketHandshake.h"
 
 static const PacketFactory* packets[256];
 
 void register_packets() {
+    register_packet(002, PacketHandshake_factory());
     register_packet(254, PacketPingHandshake_factory());
     register_packet(255, PacketDisconnect_factory());
 }

@@ -7,10 +7,8 @@
 #include <netdb.h>
 #include <string.h>
 #include "proxy.h"
-
-
 #include "ConnectionContext.h"
-#include "../include/Connection.h"
+#include "Connection.h"
 #include "packet/PacketFactory.h"
 #include "packet/Packet_VTable.h"
 

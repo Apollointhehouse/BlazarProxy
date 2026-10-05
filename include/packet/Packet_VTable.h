@@ -1,5 +1,6 @@
 #pragma once
 
+#include <stdio.h>
 #include "Connection.h"
 #include "ConnectionContext.h"
 #include "Packet.h"

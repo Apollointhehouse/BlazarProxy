@@ -1,11 +1,9 @@
-#include "packet/PacketPingHandshake.h"
-
+#include "packet/handshake/PacketPingHandshake.h"
 #include <stdio.h>
 #include <stdlib.h>
-
 #include "Connection.h"
 #include "ConnectionContext.h"
-#include "packet/PacketDisconnect.h"
+#include "packet/handshake/PacketDisconnect.h"
 #include "packet/PacketFactory.h"
 #include "util/StringUTF16.h"
 
