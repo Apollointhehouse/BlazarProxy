@@ -12,19 +12,19 @@ struct Connection {
     int32_t socket;
 };
 
-Connection* connection_create(const int32_t new_socket) {
+Connection* nullable connection_create(const int32_t new_socket) {
     Connection* args = malloc(sizeof(struct Connection));
     if (!args) return NULL;
     args->socket = new_socket;
     return args;
 }
 
-void connection_destroy(const Connection* self) {
+void connection_destroy(const Connection* nonnull self) {
     close(self->socket);
     free((void*)self);
 }
 
-static ssize_t connection_read_all(const Connection* self, const size_t size, void* out) {
+static ssize_t connection_read_all(const Connection* nonnull self, const size_t size, void* nonnull out) {
     if (size == 0) return 0;
 
     uint8_t* dst = out;
@@ -39,7 +39,7 @@ static ssize_t connection_read_all(const Connection* self, const size_t size, vo
 }
 
 
-static ssize_t connection_read_be(const Connection* self, const size_t size, uint64_t* out) {
+static ssize_t connection_read_be(const Connection* nonnull self, const size_t size, uint64_t* nonnull out) {
     if (size == 0 || size > sizeof(uint64_t)) {
         errno = EINVAL;
         return -1;
@@ -58,17 +58,14 @@ static ssize_t connection_read_be(const Connection* self, const size_t size, uin
     return code;
 }
 
-static ssize_t connection_write_bytes_be(const Connection* self, const size_t size, const int8_t* in) {
-    int8_t bytes[size];
-
-    for (size_t i = 0; i < size; i++) {
-        bytes[i] = (int8_t)in[size - 1 - i];
-    }
-
+static ssize_t connection_write_bytes_be(const Connection* nonnull self, const size_t size, const uint64_t value) {
+    uint8_t bytes[sizeof(uint64_t)];
+    for (size_t i = 0; i < size; i++)
+        bytes[i] = (uint8_t)(value >> (8 * (size - 1 - i)));
     return write(self->socket, bytes, size);
 }
 
-ssize_t connection_read_i8(const Connection* self, int8_t* out) {
+ssize_t connection_read_i8(const Connection* nonnull self, int8_t* nonnull out) {
     uint64_t v;
     const ssize_t code = connection_read_be(self, sizeof(int8_t), &v);
     if (code <= 0) return code;
@@ -76,7 +73,7 @@ ssize_t connection_read_i8(const Connection* self, int8_t* out) {
     return code;
 }
 
-ssize_t connection_read_i16(const Connection* self, int16_t* out) {
+ssize_t connection_read_i16(const Connection* nonnull self, int16_t* nonnull out) {
     uint64_t v;
     const ssize_t code = connection_read_be(self, sizeof(int16_t), &v);
     if (code <= 0) return code;
@@ -84,7 +81,7 @@ ssize_t connection_read_i16(const Connection* self, int16_t* out) {
     return code;
 }
 
-ssize_t connection_read_i32(const Connection* self, int32_t* out) {
+ssize_t connection_read_i32(const Connection* nonnull self, int32_t* nonnull out) {
     uint64_t v;
     const ssize_t code = connection_read_be(self, sizeof(int32_t), &v);
     if (code <= 0) return code;
@@ -92,7 +89,7 @@ ssize_t connection_read_i32(const Connection* self, int32_t* out) {
     return code;
 }
 
-ssize_t connection_read_i64(const Connection* self, int64_t* out) {
+ssize_t connection_read_i64(const Connection* nonnull self, int64_t* nonnull out) {
     uint64_t v;
     const ssize_t code = connection_read_be(self, sizeof(int64_t), &v);
     if (code <= 0) return code;
@@ -100,7 +97,7 @@ ssize_t connection_read_i64(const Connection* self, int64_t* out) {
     return code;
 }
 
-ssize_t connection_read_str_utf16(const Connection* self, StringUTF16** out) {
+ssize_t connection_read_str_utf16(const Connection* nonnull self, StringUTF16*nonnull *nonnull out) {
     int16_t length;
     ssize_t code;
 
@@ -137,7 +134,7 @@ ssize_t connection_read_str_utf16(const Connection* self, StringUTF16** out) {
     return code;
 }
 
-ssize_t connection_read_str_utf8(const Connection* self, StringUTF8** out) {
+ssize_t connection_read_str_utf8(const Connection* nonnull self, StringUTF8*nonnull *nonnull out) {
     int16_t length;
     ssize_t code;
 
@@ -173,19 +170,19 @@ ssize_t connection_read_str_utf8(const Connection* self, StringUTF8** out) {
     return code;
 }
 
-ssize_t connection_write_i8(const Connection* self, const int8_t in) {
-    return connection_write_bytes_be(self, sizeof(int8_t), &in);
+ssize_t connection_write_i8(const Connection* nonnull self, const int8_t in) {
+    return connection_write_bytes_be(self, sizeof(int8_t), in);
 }
 
-ssize_t connection_write_i16(const Connection* self, const int16_t in) {
-    return connection_write_bytes_be(self, sizeof(int16_t), (const int8_t *)&in);
+ssize_t connection_write_i16(const Connection* nonnull self, const int16_t in) {
+    return connection_write_bytes_be(self, sizeof(int16_t), in);
 }
 
-ssize_t connection_write_i32(const Connection* self, const int32_t in) {
-    return connection_write_bytes_be(self, sizeof(int32_t), (const int8_t *)&in);
+ssize_t connection_write_i32(const Connection* nonnull self, const int32_t in) {
+    return connection_write_bytes_be(self, sizeof(int32_t), in);
 }
 
-ssize_t connection_write_str_utf16(const Connection* self, const StringUTF16* in) {
+ssize_t connection_write_str_utf16(const Connection* nonnull self, const StringUTF16* nonnull in) {
     const int16_t length = (int16_t)in->size(in) / 2;
 
     connection_write_i16(self, length);
@@ -195,7 +192,7 @@ ssize_t connection_write_str_utf16(const Connection* self, const StringUTF16* in
     return code;
 }
 
-ssize_t connection_write_str_utf8(const Connection* self, const StringUTF8* in) {
+ssize_t connection_write_str_utf8(const Connection* nonnull self, const StringUTF8* in) {
     const int16_t length = (int16_t)in->size(in);
 
     connection_write_i16(self, length);
@@ -205,14 +202,14 @@ ssize_t connection_write_str_utf8(const Connection* self, const StringUTF8* in) 
     return code;
 }
 
-ssize_t connection_read(const Connection* self, void *read_buffer, const size_t length) {
+ssize_t connection_read(const Connection* nonnull self, void *read_buffer, const size_t length) {
     return read(self->socket, read_buffer, length);
 }
 
-ssize_t connection_write(const Connection* self, const void* data, const size_t length) {
+ssize_t connection_write(const Connection* nonnull self, const void* data, const size_t length) {
     return send(self->socket, data, length, 0);
 }
 
-void connection_shutdown(const Connection* con) {
+void connection_shutdown(const Connection* nonnull con) {
     if (con) shutdown(con->socket, SHUT_RDWR);
 }

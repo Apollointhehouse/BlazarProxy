@@ -9,7 +9,7 @@
 
 #define PING_REPLY "\xA7" "1" "\0" "32769" "\0" "8.0.1" "\0" "Proxy Server" "\0" "0" "\0" "100"
 
-static ssize_t PacketPingHandshake_handle(const Packet* packet, const ConnectionContext* ctx) {
+static ssize_t PacketPingHandshake_handle(const Packet* nonnull packet, const ConnectionContext* nonnull ctx) {
     const PacketPingHandshake* data = packet->data;
 
     STRING_UTF16_TO_C_STR(ping_host_string, data->ping_host_string);
@@ -34,7 +34,12 @@ static ssize_t PacketPingHandshake_handle(const Packet* packet, const Connection
     PacketDisconnect* response_data = malloc(sizeof(PacketDisconnect));
     if (!response_data) return 1;
 
-    response_data->reason = string_utf16_from_c_str(PING_REPLY, sizeof(PING_REPLY) - 1);
+    StringUTF16* reason = string_utf16_from_c_str(PING_REPLY, sizeof(PING_REPLY) - 1);
+    if (!reason) {
+        perror("Failed to convert ping reply from C str to StringUTF16");
+    }
+
+    response_data->reason = reason;
 
     Packet* response = calloc(1, sizeof(Packet));
     if (!response) {
@@ -53,7 +58,7 @@ static ssize_t PacketPingHandshake_handle(const Packet* packet, const Connection
     return 0;
 }
 
-static void PacketPingHandshake_destroy(const Packet* packet) {
+static void PacketPingHandshake_destroy(const Packet* nonnull packet) {
     const PacketPingHandshake* data = packet->data;
 
     data->ping_host_string->destroy(data->ping_host_string);
@@ -62,7 +67,7 @@ static void PacketPingHandshake_destroy(const Packet* packet) {
     free((void*)packet);
 }
 
-static const Packet* PacketPingHandshake_read(const Connection* connection) {
+static const Packet* nullable PacketPingHandshake_read(const Connection* nonnull connection) {
     int16_t temp;
 
     PacketPingHandshake* data = calloc(1, sizeof(PacketPingHandshake));
@@ -91,7 +96,7 @@ static const Packet* PacketPingHandshake_read(const Connection* connection) {
     return packet;
 }
 
-static void PacketPingHandshake_write(const Packet* packet, const Connection* connection) {
+static void PacketPingHandshake_write(const Packet* nonnull packet, const Connection* nonnull connection) {
     const PacketPingHandshake* data = packet->data;
 
     STRING_UTF16_TO_C_STR(ping_host_string, data->ping_host_string);
@@ -105,7 +110,7 @@ static void PacketPingHandshake_write(const Packet* packet, const Connection* co
     connection_write_i32(connection, data->port);
 }
 
-const Packet_VTable* PacketPingHandshake_vtable() {
+const Packet_VTable* nonnull PacketPingHandshake_vtable() {
     static const Packet_VTable vtable = (Packet_VTable) {
         .read = PacketPingHandshake_read,
         .write = PacketPingHandshake_write,
@@ -116,7 +121,7 @@ const Packet_VTable* PacketPingHandshake_vtable() {
     return &vtable;
 }
 
-const PacketFactory* PacketPingHandshake_factory() {
+const PacketFactory* nonnull PacketPingHandshake_factory() {
     static const PacketFactory factory = {
         .read = PacketPingHandshake_read
     };

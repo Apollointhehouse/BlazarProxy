@@ -6,17 +6,17 @@
 
 #include "packet/PacketFactory.h"
 
-static ssize_t PacketHandshake_handle(const Packet* packet, const ConnectionContext* ctx) {
+static ssize_t PacketHandshake_handle(const Packet* nonnull packet, const ConnectionContext* nonnull ctx) {
     const PacketHandshake* data = packet->data;
 
-    STRING_UTF16_TO_C_STR(username, data->username);
+    STRING_UTF8_TO_C_STR(username, data->username);
 
     printf("PacketHandshake(username=%s)\n",username);
 
     return 1;
 }
 
-static void PacketHandshake_destroy(const Packet* packet) {
+static void PacketHandshake_destroy(const Packet* nonnull packet) {
     const PacketHandshake* data = packet->data;
 
     data->username->destroy(data->username);
@@ -24,7 +24,7 @@ static void PacketHandshake_destroy(const Packet* packet) {
     free((void*)packet);
 }
 
-static const Packet* PacketHandshake_read(const Connection* connection) {
+static const Packet* PacketHandshake_read(const Connection* nonnull connection) {
     PacketHandshake* data = calloc(1, sizeof(PacketHandshake));
     if (!data) return NULL;
 
@@ -45,13 +45,13 @@ static const Packet* PacketHandshake_read(const Connection* connection) {
     return packet;
 }
 
-static void PacketHandshake_write(const Packet* packet, const Connection* connection) {
+static void PacketHandshake_write(const Packet* nonnull packet, const Connection* nonnull connection) {
     const PacketHandshake* data = packet->data;
 
     connection_write_str_utf8(connection, data->username);
 }
 
-const Packet_VTable* PacketHandshake_vtable() {
+const Packet_VTable* nonnull PacketHandshake_vtable() {
     static const Packet_VTable vtable = (Packet_VTable) {
         .read = PacketHandshake_read,
         .write = PacketHandshake_write,
@@ -62,7 +62,7 @@ const Packet_VTable* PacketHandshake_vtable() {
     return &vtable;
 }
 
-const PacketFactory* PacketHandshake_factory() {
+const PacketFactory* nonnull PacketHandshake_factory() {
     static const PacketFactory factory = {
         .read = PacketHandshake_read
     };

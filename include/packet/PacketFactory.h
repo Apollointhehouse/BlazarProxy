@@ -4,5 +4,5 @@
 #include "packet/Packet.h"
 
 typedef struct PacketFactory {
-    const Packet* (*read)(const Connection* connection);
+    const Packet* nullable (*nonnull read)(const Connection* nonnull connection);
 } PacketFactory;

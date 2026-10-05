@@ -102,7 +102,7 @@ static int32_t connect_to_server(const char *host, const char *port) {
     return fd;
 }
 
-static void* packet_forwarding(void* args) {
+static void* packet_forwarding(void* nonnull args) {
     const ConnectionContext* ctx = (ConnectionContext*)args;
 
     const Connection* source = ctx->source;
@@ -143,7 +143,7 @@ static void* packet_forwarding(void* args) {
     return NULL;
 }
 
-static void* bridge(void* arg) {
+static void* bridge(void* nonnull arg) {
     const Connection* client_con = arg;
     printf("Accepted Connection!\n");
 
@@ -165,7 +165,17 @@ static void* bridge(void* arg) {
     pthread_t s2c_thread;
 
     ConnectionContext* c2s_context = connection_ctx_create(client_con, server_con);
+    if (!c2s_context) {
+        perror("Failed to create C2S connection context");
+        return NULL;
+    }
+
     ConnectionContext* s2c_context = connection_ctx_create(server_con, client_con);
+
+    if (!s2c_context) {
+        perror("Failed to create S2C connection context");
+        return NULL;
+    }
 
     if (pthread_create(&c2s_thread, NULL, packet_forwarding, c2s_context)) {
         connection_ctx_destroy(c2s_context);

@@ -5,8 +5,8 @@
 #include "util/StringUTF16.h"
 
 typedef struct PacketDisconnect {
-    StringUTF16* reason;
+    StringUTF16* nonnull reason;
 } PacketDisconnect;
 
-const Packet_VTable* PacketDisconnect_vtable();
-const PacketFactory* PacketDisconnect_factory();
+const Packet_VTable* nonnull PacketDisconnect_vtable();
+const PacketFactory* nonnull PacketDisconnect_factory();

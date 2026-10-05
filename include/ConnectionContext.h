@@ -1,10 +1,11 @@
 #pragma once
 #include "Connection.h"
+#include "nullability.h"
 
 typedef struct ConnectionContext {
-    const Connection* sink;
-    const Connection* source;
+    const Connection* nonnull sink;
+    const Connection* nonnull source;
 } ConnectionContext;
 
-ConnectionContext* connection_ctx_create(const Connection* sink, const Connection* source);
-void connection_ctx_destroy(const ConnectionContext* context);
+ConnectionContext* nullable connection_ctx_create(const Connection* nonnull sink, const Connection* nonnull source);
+void connection_ctx_destroy(const ConnectionContext* nonnull context);

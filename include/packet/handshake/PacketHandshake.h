@@ -2,8 +2,8 @@
 #include "packet/Packet_VTable.h"
 
 typedef struct PacketHandshake {
-    StringUTF8* username;
+    StringUTF8* nonnull username;
 } PacketHandshake;
 
-const Packet_VTable* PacketHandshake_vtable();
-const PacketFactory* PacketHandshake_factory();
+const Packet_VTable* nonnull PacketHandshake_vtable();
+const PacketFactory* nonnull PacketHandshake_factory();

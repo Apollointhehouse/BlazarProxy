@@ -24,10 +24,16 @@ add_executable(BlazarProxy src/main.c
         src/packet/handshake/PacketHandshake.c
         include/packet/handshake/PacketHandshake.h
         include/util/StringUTF8.h
-        src/util/StringUTF8.c)
+        src/util/StringUTF8.c
+        include/nullability.h)
 
 include_directories(include)
 
-if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+if(CMAKE_C_COMPILER_ID MATCHES "Clang")
+    target_compile_options(BlazarProxy PRIVATE -Wno-nullability-extension)
+elseif(CMAKE_COMPILER_IS_GNUCC OR CMAKE_C_COMPILER_ID MATCHES "GNU")
     target_compile_options(BlazarProxy PRIVATE -fanalyzer)
 endif()
+
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(CMAKE_CXX_CLANG_TIDY "clang-tidy;-checks=-*,clang-analyzer-core.NullDereference")

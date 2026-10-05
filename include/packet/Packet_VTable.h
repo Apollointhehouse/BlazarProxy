@@ -6,8 +6,8 @@
 #include "Packet.h"
 
 typedef struct Packet_VTable {
-    const Packet* (*read)(const Connection* connection);
-    void (*write)(const Packet* packet, const Connection* connection);
-    void (*destroy)(const Packet* packet);
-    ssize_t (*handle)(const Packet* packet, const ConnectionContext* ctx);
+    const Packet* nullable (*nonnull read)(const Connection* nonnull connection);
+    void (*nonnull write)(const Packet* nonnull packet, const Connection* nonnull connection);
+    void (*nonnull destroy)(const Packet* nonnull packet);
+    ssize_t (*nonnull handle)(const Packet* nonnull packet, const ConnectionContext* nonnull ctx);
 } Packet_VTable;
