@@ -39,7 +39,11 @@ static ssize_t PacketPingHandshake_handle(const Packet* packet, const Connection
     response_data->reason = string_utf16_from_c_str(PING_REPLY, sizeof(PING_REPLY) - 1);
 
     Packet* response = calloc(1, sizeof(Packet));
-    if (!response) return 1;
+    if (!response) {
+        free(response_data->reason);
+        free(response_data);
+        return 1;
+    }
 
     response->data = response_data;
     response->v = PacketDisconnect_vtable();
@@ -64,7 +68,10 @@ static const Packet* PacketPingHandshake_read(const Connection* connection) {
     int16_t temp;
 
     PacketPingHandshake* data = calloc(1, sizeof(PacketPingHandshake));
+    if (!data) return NULL;
+
     Packet* packet = calloc(1, sizeof(Packet));
+    if (!packet) return NULL;
     packet->data = data;
     packet->v = PacketPingHandshake_vtable();
 

@@ -63,6 +63,11 @@ static void accept_connection(const int32_t server_fd, struct sockaddr_in addres
     }
 
     Connection *client_con = connection_create(new_socket);
+    if (!client_con) {
+        perror("Failed to create client connection");
+        return;
+    }
+
     pthread_t thread;
 
     if (pthread_create(&thread, NULL, bridge, client_con)) {

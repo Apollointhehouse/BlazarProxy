@@ -23,3 +23,7 @@ add_executable(BlazarProxy src/main.c
         include/packet/Packet.h)
 
 include_directories(include)
+
+if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+    target_compile_options(BlazarProxy PRIVATE -fanalyzer)
+endif()

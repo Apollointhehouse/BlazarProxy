@@ -14,6 +14,7 @@ struct Connection {
 
 Connection* connection_create(const int32_t new_socket) {
     Connection* args = malloc(sizeof(struct Connection));
+    if (!args) return NULL;
     args->socket = new_socket;
     return args;
 }

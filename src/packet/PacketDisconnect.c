@@ -29,6 +29,7 @@ static void PacketDisconnect_destroy(const Packet* packet) {
 static const Packet* PacketDisconnect_read(const Connection* connection) {
     PacketDisconnect* data = calloc(1, sizeof(PacketDisconnect));
     Packet* packet = malloc(sizeof(Packet));
+    if (!packet) return NULL;
     packet->data = data;
     packet->v = PacketDisconnect_vtable();
 
