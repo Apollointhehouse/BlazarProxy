@@ -5,7 +5,8 @@
 #include <stdint.h>
 
 #include "Connection.h"
-#include "PacketEntry.h"
+#include "PacketFactory.h"
+#include "Packet_VTable.h"
 #include "util/StringUTF16.h"
 
 typedef struct PacketPingHandshake {
@@ -17,4 +18,5 @@ typedef struct PacketPingHandshake {
     int32_t port;
 } PacketPingHandshake;
 
-PacketEntry PacketPingHandshake_vtable();
+const Packet_VTable* PacketPingHandshake_vtable();
+const PacketFactory* PacketPingHandshake_factory();

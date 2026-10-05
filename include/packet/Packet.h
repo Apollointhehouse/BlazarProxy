@@ -1,0 +1,15 @@
+#pragma once
+#include <stdint.h>
+
+typedef struct Packet Packet;
+typedef struct Packet_VTable Packet_VTable;
+typedef struct PacketFactory PacketFactory;
+
+typedef struct Packet {
+    const Packet_VTable* vtable;
+    const void* data;
+} Packet;
+
+void register_packets();
+const PacketFactory* get_packet_factory(uint8_t id);
+void register_packet(uint8_t id, const PacketFactory* packet_vtable);

@@ -11,7 +11,8 @@
 
 #include "ConnectionContext.h"
 #include "../include/Connection.h"
-#include "packet/PacketEntry.h"
+#include "packet/PacketFactory.h"
+#include "packet/Packet_VTable.h"
 
 void proxy(const int32_t port) {
     int32_t server_fd;
@@ -43,6 +44,8 @@ void proxy(const int32_t port) {
     }
 
     register_packets();
+
+    printf("Listening for connections on port %d\n", port);
 
     while (1) {
         accept_connection(server_fd, address, sizeof(address));
@@ -107,26 +110,26 @@ static void* packet_forwarding(void* args) {
     while (connection_read_i8(source, (int8_t*)&packet_id) > 0) {
         printf("packet_id: %d\n", packet_id);
 
-        const PacketEntry* entry = get_packet_entry(packet_id);
-        if (!entry) {
-            printf("Missing packet entry for id: %d\n", packet_id);
+        const PacketFactory* factory = get_packet_factory(packet_id);
+        if (!factory) {
+            printf("Missing packet facotry for id: %d\n", packet_id);
             break;
         }
 
-        const void* packet = entry->read(source);
+        const Packet* packet = factory->read(source);
 
         if (!packet) {
             printf("Failed to read packet id: %d\n", packet_id);
             break;
         }
 
-        if (!entry->handle((void*)packet, ctx)) {
-            entry->destroy((void*)packet);
+        if (!packet->vtable->handle(packet, ctx)) {
+            packet->vtable->destroy(packet);
             continue;
         }
         connection_write_i8(sink, (int8_t)packet_id);
-        entry->write((void*)packet, sink);
-        entry->destroy((void*)packet);
+        packet->vtable->write(packet, sink);
+        packet->vtable->destroy(packet);
     }
 
     connection_shutdown(source);
@@ -134,14 +137,12 @@ static void* packet_forwarding(void* args) {
 
     connection_ctx_destroy(ctx);
 
-    printf("Connection Closed\n");
-
     return NULL;
 }
 
 static void* bridge(void* arg) {
-    printf("bridge thread started ------------------------:\n");
     const Connection* client_con = arg;
+    printf("Accepted Connection!\n");
 
     const int32_t server_fd = connect_to_server("btanarchy.com", "25565");
 
@@ -181,6 +182,6 @@ static void* bridge(void* arg) {
     connection_destroy(client_con);
     connection_destroy(server_con);
 
-    printf("bridge thread ended\n");
+    printf("Connection Closed\n");
     return NULL;
 }

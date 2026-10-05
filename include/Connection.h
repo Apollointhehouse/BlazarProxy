@@ -1,9 +1,7 @@
 #pragma once
 
 #include <stddef.h>
-
 #include <sys/types.h>
-
 #include "util/StringUTF16.h"
 
 typedef struct Connection Connection;

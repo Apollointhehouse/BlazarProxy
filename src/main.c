@@ -7,6 +7,8 @@
 
 int32_t main(int32_t argc, char const* argv[])
 {
+    printf("Starting Proxy!\n");
+
     proxy(PORT);
 
     printf("Proxy Stopped\n");
