@@ -3,6 +3,14 @@ project(BlazarProxy C)
 
 set(CMAKE_C_STANDARD 11)
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+set(CMAKE_C_CLANG_TIDY
+        clang-tidy
+        --removed-arg=-pedantic-errors
+        -checks=-*,clang-analyzer-core.NullDereference,clang-analyzer-nullability.*
+        -warnings-as-errors=*)
+
 add_executable(BlazarProxy src/main.c
         src/proxy.c
         include/proxy.h
@@ -12,13 +20,11 @@ add_executable(BlazarProxy src/main.c
         include/packet/handshake/PacketPingHandshake.h
         src/util/StringUTF16.c
         include/util/StringUTF16.h
-        src/packet/Packet_VTable.c
         include/packet/Packet_VTable.h
         src/ConnectionContext.c
         include/ConnectionContext.h
         src/packet/handshake/PacketDisconnect.c
         include/packet/PacketFactory.h
-        src/packet/PacketFactory.c
         src/packet/Packet.c
         include/packet/Packet.h
         src/packet/handshake/PacketHandshake.c
@@ -30,10 +36,24 @@ add_executable(BlazarProxy src/main.c
 include_directories(include)
 
 if(CMAKE_C_COMPILER_ID MATCHES "Clang")
-    target_compile_options(BlazarProxy PRIVATE -Wno-nullability-extension)
-elseif(CMAKE_COMPILER_IS_GNUCC OR CMAKE_C_COMPILER_ID MATCHES "GNU")
-    target_compile_options(BlazarProxy PRIVATE -fanalyzer)
-endif()
+    target_compile_options(BlazarProxy PRIVATE
+            -Wno-nullability-extension
+            -Xclang -pedantic-errors
+            -Wno-strict-prototypes
+            -Wno-deprecated-non-prototype
+            -Werror=null-dereference
 
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-set(CMAKE_CXX_CLANG_TIDY "clang-tidy;-checks=-*,clang-analyzer-core.NullDereference")
+            -fsanitize=undefined
+            -fno-sanitize-recover=undefined
+    )
+
+    target_link_options(BlazarProxy PRIVATE -fsanitize=undefined)
+
+elseif(CMAKE_COMPILER_IS_GNUCC OR CMAKE_C_COMPILER_ID MATCHES "GNU")
+    target_compile_options(BlazarProxy PRIVATE
+            -fanalyzer
+            -pedantic-errors
+            -Wno-strict-prototypes
+            -Werror=analyzer-null-dereference
+    )
+endif()

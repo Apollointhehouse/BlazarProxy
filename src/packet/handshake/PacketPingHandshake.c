@@ -37,6 +37,7 @@ static ssize_t PacketPingHandshake_handle(const Packet* nonnull packet, const Co
     StringUTF16* reason = string_utf16_from_c_str(PING_REPLY, sizeof(PING_REPLY) - 1);
     if (!reason) {
         perror("Failed to convert ping reply from C str to StringUTF16");
+        return -1;
     }
 
     response_data->reason = reason;

@@ -76,7 +76,7 @@ static void accept_connection(const int32_t server_fd, struct sockaddr_in addres
     pthread_detach(thread);
 }
 
-static int32_t connect_to_server(const char *host, const char *port) {
+static int32_t connect_to_server(const char* nonnull host, const char* nonnull port) {
     struct addrinfo hints, *res, *rp;
     int32_t fd = -1;
 
@@ -170,7 +170,7 @@ static void* bridge(void* nonnull arg) {
         return NULL;
     }
 
-    ConnectionContext* s2c_context = connection_ctx_create(server_con, client_con);
+    ConnectionContext* nullable s2c_context = connection_ctx_create(server_con, client_con);
 
     if (!s2c_context) {
         perror("Failed to create S2C connection context");
