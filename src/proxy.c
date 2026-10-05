@@ -123,13 +123,13 @@ static void* packet_forwarding(void* args) {
             break;
         }
 
-        if (!packet->vtable->handle(packet, ctx)) {
-            packet->vtable->destroy(packet);
+        if (!packet->v->handle(packet, ctx)) {
+            packet->v->destroy(packet);
             continue;
         }
         connection_write_i8(sink, (int8_t)packet_id);
-        packet->vtable->write(packet, sink);
-        packet->vtable->destroy(packet);
+        packet->v->write(packet, sink);
+        packet->v->destroy(packet);
     }
 
     connection_shutdown(source);

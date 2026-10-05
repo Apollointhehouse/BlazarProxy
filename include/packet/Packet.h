@@ -1,12 +1,11 @@
 #pragma once
 #include <stdint.h>
 
-typedef struct Packet Packet;
 typedef struct Packet_VTable Packet_VTable;
 typedef struct PacketFactory PacketFactory;
 
 typedef struct Packet {
-    const Packet_VTable* vtable;
+    const Packet_VTable* v;
     const void* data;
 } Packet;
 

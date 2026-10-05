@@ -62,7 +62,7 @@ static size_t string_utf16_size(const StringUTF16* self) {
     return self->data->length;
 }
 
-static const u_int8_t* string_utf16_buffer(const StringUTF16* self) {
+static const uint8_t* string_utf16_buffer(const StringUTF16* self) {
     return self->data->buffer;
 }
 

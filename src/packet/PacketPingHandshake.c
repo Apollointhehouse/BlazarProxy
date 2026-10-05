@@ -42,11 +42,11 @@ static ssize_t PacketPingHandshake_handle(const Packet* packet, const Connection
     if (!response) return 1;
 
     response->data = response_data;
-    response->vtable = PacketDisconnect_vtable();
+    response->v = PacketDisconnect_vtable();
 
     connection_write_i8(ctx->source, (int8_t)255);
-    response->vtable->write(response, ctx->source);
-    response->vtable->destroy(response);
+    response->v->write(response, ctx->source);
+    response->v->destroy(response);
 
     return 0;
 }
@@ -66,7 +66,7 @@ static const Packet* PacketPingHandshake_read(const Connection* connection) {
     PacketPingHandshake* data = calloc(1, sizeof(PacketPingHandshake));
     Packet* packet = calloc(1, sizeof(Packet));
     packet->data = data;
-    packet->vtable = PacketPingHandshake_vtable();
+    packet->v = PacketPingHandshake_vtable();
 
     if (!data) return NULL;
 

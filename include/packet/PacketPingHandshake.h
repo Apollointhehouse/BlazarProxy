@@ -1,12 +1,8 @@
 #pragma once
 
 #include "packet/PacketPingHandshake.h"
-
 #include <stdint.h>
-
-#include "Connection.h"
 #include "PacketFactory.h"
-#include "Packet_VTable.h"
 #include "util/StringUTF16.h"
 
 typedef struct PacketPingHandshake {

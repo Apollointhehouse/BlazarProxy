@@ -30,7 +30,7 @@ static const Packet* PacketDisconnect_read(const Connection* connection) {
     PacketDisconnect* data = calloc(1, sizeof(PacketDisconnect));
     Packet* packet = malloc(sizeof(Packet));
     packet->data = data;
-    packet->vtable = PacketDisconnect_vtable();
+    packet->v = PacketDisconnect_vtable();
 
     if (!data) return NULL;
 
