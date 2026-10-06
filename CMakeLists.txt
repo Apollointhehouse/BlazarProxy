@@ -33,9 +33,13 @@ add_executable(BlazarProxy src/main.c
         src/util/StringUTF8.c
         include/nullability.h
         include/util/UUID.h
-        include/packet/handshake/PacketLogin.h
-        src/packet/handshake/PacketLogin.c
-        src/util/UUID.c)
+        include/packet/auth/PacketLogin.h
+        src/packet/auth/PacketLogin.c
+        src/util/UUID.c
+        src/packet/auth/PacketAESSendKey.c
+        include/packet/auth/PacketAESSendKey.h
+        src/packet/container/PacketRecipeSync.c
+        include/packet/container/PacketRecipeSync.h)
 
 include_directories(include)
 

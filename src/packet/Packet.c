@@ -2,13 +2,17 @@
 #include "packet/handshake/PacketDisconnect.h"
 #include "packet/handshake/PacketPingHandshake.h"
 #include "packet/handshake/PacketHandshake.h"
-#include "packet/handshake/PacketLogin.h"
+#include "packet/auth/PacketLogin.h"
+#include "packet/auth/PacketAESSendKey.h"
+#include "packet/container/PacketRecipeSync.h"
 
 static const PacketFactory* nullable packets[256];
 
 void register_packets() {
     register_packet(001, PacketLogin_factory());
     register_packet(002, PacketHandshake_factory());
+    register_packet(75, PacketRecipeSync_factory());
+    register_packet(136, PacketAESSendKey_factory());
     register_packet(254, PacketPingHandshake_factory());
     register_packet(255, PacketDisconnect_factory());
 }

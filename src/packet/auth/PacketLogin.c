@@ -1,4 +1,4 @@
-#include "packet/handshake/PacketLogin.h"
+#include "../../../include/packet/auth/PacketLogin.h"
 
 #include <inttypes.h>
 
