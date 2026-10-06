@@ -5,7 +5,7 @@
 typedef struct PacketCustomPayload {
     StringUTF8* nonnull net_channel;
     int32_t size;
-    uint8_t* data;
+    uint8_t* nonnull data;
 } PacketCustomPayload;
 
 const Packet_VTable* nonnull PacketCustomPayload_vtable();

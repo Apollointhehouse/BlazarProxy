@@ -57,11 +57,12 @@ static const Packet* PacketLogin_read(const Connection* nonnull connection) {
     if (!data) return NULL;
 
     Packet* packet = calloc(1, sizeof(Packet));
-    if (!packet) return NULL;
+    if (!packet) {
+        free(data);
+        return NULL;
+    }
     packet->data = data;
     packet->v = PacketLogin_vtable();
-
-    if (!data) return NULL;
 
     if (
         connection_read_i32(connection, &data->proto_or_player_id) <= 0 ||

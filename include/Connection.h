@@ -3,6 +3,7 @@
 #include <stddef.h>
 #include "util/StringUTF16.h"
 #include "util/StringUTF8.h"
+#include "util/NBT.h"
 #include <stdio.h>
 
 #include "nullability.h"
@@ -25,6 +26,7 @@ ssize_t connection_read_i64(const Connection* nonnull self, int64_t* nonnull out
 ssize_t connection_read_str_utf16(const Connection* nonnull self, StringUTF16*nonnull *nonnull out);
 ssize_t connection_read_str_utf8(const Connection* nonnull self, StringUTF8*nonnull *nonnull out);
 ssize_t connection_read_uuid(const Connection* nonnull self, UUID* nonnull out);
+ssize_t connection_read_nbt(const Connection* nonnull self, NBT* nonnull out);
 
 ssize_t connection_write_i8(const Connection* nonnull self, int8_t in);
 ssize_t connection_write_i16(const Connection* nonnull self, int16_t in);
@@ -33,6 +35,7 @@ ssize_t connection_write_i64(const Connection* nonnull self, int64_t in);
 ssize_t connection_write_str_utf16(const Connection* nonnull self, const StringUTF16* nonnull in);
 ssize_t connection_write_str_utf8(const Connection* nonnull self, const StringUTF8* nonnull in);
 ssize_t connection_write_uuid(const Connection* nonnull self, UUID in);
+ssize_t connection_write_nbt(const Connection* nonnull self, NBT in);
 
 ssize_t connection_write(const Connection* nonnull self, size_t size, const void* nonnull data);
 

@@ -199,6 +199,18 @@ ssize_t connection_read_uuid(const Connection* nonnull self, UUID* out) {
     return code;
 }
 
+ssize_t connection_read_nbt(const Connection* nonnull self, NBT* nonnull out) {
+    ssize_t code;
+
+    if ((code = connection_read_i16(self, &out->size)) <= 0) return code;
+
+    out->buffer = calloc(1, out->size);
+
+    if ((code = connection_read(self, out->size, out->buffer)) <= 0) return code;
+
+    return code;
+}
+
 ssize_t connection_write_i8(const Connection* nonnull self, const int8_t in) {
     return connection_write_bytes_be(self, sizeof(int8_t), in);
 }
@@ -242,6 +254,15 @@ ssize_t connection_write_uuid(const Connection* nonnull self, const UUID in) {
 
     if ((code = connection_write_i64(self, (int64_t)msb)) <= 0) return code;
     if ((code = connection_write_i64(self, (int64_t)lsb)) <= 0) return code;
+
+    return code;
+}
+
+ssize_t connection_write_nbt(const Connection* nonnull self, const NBT in) {
+    ssize_t code;
+
+    if ((code = connection_write_i16(self, in.size)) <= 0) return code;
+    if ((code = connection_write(self, in.size, in.buffer)) <= 0) return code;
 
     return code;
 }

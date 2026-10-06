@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../PacketFactory.h"
-#include "../Packet_VTable.h"
+#include "packet/PacketFactory.h"
+#include "packet/Packet_VTable.h"
 #include "util/StringUTF16.h"
 
 typedef struct PacketDisconnect {

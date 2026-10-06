@@ -29,11 +29,12 @@ static const Packet* PacketHandshake_read(const Connection* nonnull connection) 
     if (!data) return NULL;
 
     Packet* packet = calloc(1, sizeof(Packet));
-    if (!packet) return NULL;
+    if (!packet) {
+        free(data);
+        return NULL;
+    }
     packet->data = data;
     packet->v = PacketHandshake_vtable();
-
-    if (!data) return NULL;
 
     if (
         connection_read_str_utf8(connection, &data->username) <= 0

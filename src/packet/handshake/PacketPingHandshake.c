@@ -44,7 +44,7 @@ static ssize_t PacketPingHandshake_handle(const Packet* nonnull packet, const Co
 
     Packet* response = calloc(1, sizeof(Packet));
     if (!response) {
-        free(response_data->reason);
+        response_data->reason->destroy(response_data->reason);
         free(response_data);
         return 1;
     }
@@ -78,8 +78,6 @@ static const Packet* nullable PacketPingHandshake_read(const Connection* nonnull
     if (!packet) return NULL;
     packet->data = data;
     packet->v = PacketPingHandshake_vtable();
-
-    if (!data) return NULL;
 
     if (
         connection_read_i8(connection, (int8_t*)&data->payload) <= 0 ||
