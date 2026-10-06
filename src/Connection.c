@@ -6,6 +6,8 @@
 #include <sys/socket.h>
 #include "util/StringUTF16.h"
 #include "Connection.h"
+
+#include "util/logging.h"
 #include "util/StringUTF8.h"
 #include "util/UUID.h"
 
@@ -116,7 +118,7 @@ ssize_t connection_read_str_utf16(const Connection* nonnull self, StringUTF16*no
         if (code < 0) {
             perror("Failed to read str 16BE length (Error)");
         } else {
-            fprintf(stderr, "Client disconnected while reading string length.\n");
+            LOG_ERROR("Client disconnected while reading string length.");
         }
         return code;
     }
@@ -124,7 +126,7 @@ ssize_t connection_read_str_utf16(const Connection* nonnull self, StringUTF16*no
 
     if (length < 0) {
         errno = EINVAL;
-        perror("Failed to read string 16BE length (Error)");
+        LOG_SYS_ERROR("Failed to read string 16BE length (Error)");
         return 0;
     }
 
@@ -138,9 +140,9 @@ ssize_t connection_read_str_utf16(const Connection* nonnull self, StringUTF16*no
 
     if ((code = connection_read(self, length, buffer)) <= 0) {
         if (code < 0) {
-            perror("Failed to read str 16BE bytes (Error)");
+            LOG_SYS_ERROR("Failed to read str 16BE bytes (Error)");
         } else {
-            fprintf(stderr, "Client disconnected while reading string bytes.\n");
+            LOG_ERROR("Client disconnected while reading string bytes.");
         }
         free(buffer);
         return code;
@@ -161,7 +163,7 @@ ssize_t connection_read_str_utf8(const Connection* nonnull self, StringUTF8*nonn
 
     if (length < 0) {
         errno = EINVAL;
-        perror("Failed to read string utf-8 BE length (Invalid negative size)");
+        LOG_SYS_ERROR("Failed to read string utf-8 BE length (Invalid negative size)");
         return -1;
     }
 

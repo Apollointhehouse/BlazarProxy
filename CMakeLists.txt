@@ -46,7 +46,9 @@ add_executable(BlazarProxy src/main.c
         include/packet/misc/PacketCustomPayload.h
         include/packet/misc/PacketCustomPayload.h
         src/packet/player/PacketPlayerConfig.c
-        include/packet/player/PacketPlayerConfig.h)
+        include/packet/player/PacketPlayerConfig.h
+        src/util/logging.c
+        include/util/logging.h)
 
 include_directories(include)
 

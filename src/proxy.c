@@ -7,10 +7,12 @@
 #include <netdb.h>
 #include <string.h>
 #include "proxy.h"
+#include <errno.h>
 #include "ConnectionContext.h"
 #include "Connection.h"
 #include "packet/PacketFactory.h"
 #include "packet/Packet_VTable.h"
+#include "util/logging.h"
 
 void proxy(const int32_t port) {
     int32_t server_fd;
@@ -18,12 +20,12 @@ void proxy(const int32_t port) {
     const int32_t opt = 1;
 
     if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
-        perror("socket failed");
+        LOG_SYS_ERROR("Creating server socket failed");
         exit(EXIT_FAILURE);
     }
 
     if (setsockopt(server_fd, SOL_SOCKET,SO_REUSEADDR, &opt,sizeof(opt))) {
-        perror("setsockopt");
+        LOG_SYS_ERROR("Setting socket options failed");
         exit(EXIT_FAILURE);
     }
 
@@ -32,18 +34,18 @@ void proxy(const int32_t port) {
     address.sin_port = htons(port);
 
     if (bind(server_fd, (struct sockaddr*)&address,sizeof(address)) < 0) {
-        perror("bind failed");
+        LOG_SYS_ERROR("Bind failed");
         exit(EXIT_FAILURE);
     }
 
     if (listen(server_fd, 3) < 0) {
-        perror("listen");
+        LOG_SYS_ERROR("Socket listen failed");
         exit(EXIT_FAILURE);
     }
 
     register_packets();
 
-    printf("Listening for connections on port %d\n", port);
+    LOG_INFO("Listening for connections on port %d", port);
 
     while (1) {
         accept_connection(server_fd, address, sizeof(address));
@@ -56,21 +58,21 @@ static void accept_connection(const int32_t server_fd, struct sockaddr_in addres
     const int32_t new_socket = accept(server_fd, (struct sockaddr *) &address, &addrlen);
 
     if (new_socket < 0) {
-        perror("Failed to accept connection");
+        LOG_SYS_ERROR("Failed to accept connection");
         return;
     }
 
     Connection *client_con = connection_create(new_socket);
     if (!client_con) {
-        perror("Failed to create client connection");
+        LOG_SYS_ERROR("Failed to create client connection");
         return;
     }
 
     pthread_t thread;
 
     if (pthread_create(&thread, NULL, bridge, client_con)) {
+        LOG_SYS_ERROR("Failed to create connection thread");
         connection_destroy(client_con);
-        perror("Failed to create connection thread");
         return;
     }
     pthread_detach(thread);
@@ -85,7 +87,7 @@ static int32_t connect_to_server(const char* nonnull host, const char* nonnull p
     hints.ai_socktype = SOCK_STREAM;
 
     if (getaddrinfo(host, port, &hints, &res) != 0) {
-        fprintf(stderr, "getaddrinfo failed for %s:%s\n", host, port);
+        LOG_SYS_ERROR("getaddrinfo failed for %s:%s", host, port);
         return -1;
     }
 
@@ -98,7 +100,7 @@ static int32_t connect_to_server(const char* nonnull host, const char* nonnull p
     }
 
     freeaddrinfo(res);
-    if (fd < 0) perror("connect to server failed");
+    if (fd < 0) LOG_SYS_ERROR("connect to server failed");
     return fd;
 }
 
@@ -111,18 +113,18 @@ static void* packet_forwarding(void* nonnull args) {
     uint8_t packet_id;
 
     while (connection_read_i8(source, (int8_t*)&packet_id) > 0) {
-        printf("packet_id: %d\n", packet_id);
+        LOG_INFO("packet_id: %d", packet_id);
 
         const PacketFactory* factory = get_packet_factory(packet_id);
         if (!factory) {
-            printf("Missing packet factory for id: %d\n", packet_id);
+            LOG_ERROR("Missing packet factory for id: %d", packet_id);
             break;
         }
 
         const Packet* packet = factory->read(source);
 
         if (!packet) {
-            printf("Failed to read packet id: %d\n", packet_id);
+            LOG_ERROR("Failed to read packet id: %d", packet_id);
             break;
         }
 
@@ -152,17 +154,17 @@ static void* bridge(void* nonnull arg) {
     int c2s_started = 0;
     int s2c_started = 0;
 
-    printf("Accepted Connection!\n");
+    LOG_INFO("Accepted Connection!");
 
     const int32_t server_fd = connect_to_server("btanarchy.com", "25565");
     if (server_fd < 0) {
-        fprintf(stderr, "connect to btanarchy.com failed\n");
+        LOG_ERROR("connect to btanarchy.com failed");
         goto cleanup;
     }
 
     server_con = connection_create(server_fd);
     if (!server_con) {
-        fprintf(stderr, "connection_create failed\n");
+        LOG_ERROR("connection_create failed");
         close(server_fd);
         goto cleanup;
     }
@@ -170,19 +172,19 @@ static void* bridge(void* nonnull arg) {
     c2s_context = connection_ctx_create(client_con, server_con);
     s2c_context = connection_ctx_create(server_con, client_con);
     if (!c2s_context || !s2c_context) {
-        fprintf(stderr, "Failed to create connection contexts\n");
+        LOG_ERROR("Failed to create connection contexts");
         goto cleanup;
     }
 
     if (pthread_create(&c2s_thread, NULL, packet_forwarding, c2s_context)) {
-        fprintf(stderr, "Failed to create C2S thread\n");
+        LOG_ERROR("Failed to create C2S thread");
         goto cleanup;
     }
     c2s_started = 1;
     c2s_context = NULL;
 
     if (pthread_create(&s2c_thread, NULL, packet_forwarding, s2c_context)) {
-        fprintf(stderr, "Failed to create S2C thread\n");
+        LOG_ERROR("Failed to create S2C thread");
         connection_shutdown(client_con);
         connection_shutdown(server_con);
         goto cleanup;
@@ -200,6 +202,6 @@ static void* bridge(void* nonnull arg) {
     if (server_con) connection_destroy(server_con);
     connection_destroy(client_con);
 
-    printf("Connection Closed\n");
+    LOG_INFO("Connection Closed");
     return NULL;
 }
