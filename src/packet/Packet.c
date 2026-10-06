@@ -5,14 +5,20 @@
 #include "packet/auth/PacketLogin.h"
 #include "packet/auth/PacketAESSendKey.h"
 #include "packet/container/PacketRecipeSync.h"
+#include "packet/misc/PacketCustomPayload.h"
+#include "packet/player/PacketPlayerConfig.h"
+#include "packet/world/PacketBlockRegionUpdate.h"
 
 static const PacketFactory* nullable packets[256];
 
 void register_packets() {
-    register_packet(001, PacketLogin_factory());
-    register_packet(002, PacketHandshake_factory());
+    register_packet(1, PacketLogin_factory());
+    register_packet(2, PacketHandshake_factory());
+    register_packet(36, PacketPlayerConfig_factory());
+    register_packet(51, PacketBlockRegionUpdate_factory());
     register_packet(75, PacketRecipeSync_factory());
     register_packet(136, PacketAESSendKey_factory());
+    register_packet(250, PacketCustomPayload_factory());
     register_packet(254, PacketPingHandshake_factory());
     register_packet(255, PacketDisconnect_factory());
 }
@@ -26,5 +32,10 @@ const PacketFactory* nullable get_packet_factory(const uint8_t id) {
 }
 
 void register_packet(const uint8_t id, const PacketFactory* nonnull factory) {
+    if (packets[id]) {
+        printf("Packet factory already registered for id: %d\n", id);
+        return;
+    }
+
     packets[id] = factory;
 }

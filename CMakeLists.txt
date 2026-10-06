@@ -39,7 +39,14 @@ add_executable(BlazarProxy src/main.c
         src/packet/auth/PacketAESSendKey.c
         include/packet/auth/PacketAESSendKey.h
         src/packet/container/PacketRecipeSync.c
-        include/packet/container/PacketRecipeSync.h)
+        include/packet/container/PacketRecipeSync.h
+        src/packet/world/PacketBlockRegionUpdate.c
+        include/packet/world/PacketBlockRegionUpdate.h
+        src/packet/misc/PacketCustomPayload.c
+        include/packet/misc/PacketCustomPayload.h
+        include/packet/misc/PacketCustomPayload.h
+        src/packet/player/PacketPlayerConfig.c
+        include/packet/player/PacketPlayerConfig.h)
 
 include_directories(include)
 

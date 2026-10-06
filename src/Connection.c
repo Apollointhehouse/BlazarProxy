@@ -21,7 +21,7 @@ void connection_destroy(const Connection* nonnull self) {
     free((void*)self);
 }
 
-static ssize_t connection_read_all(const Connection* nonnull self, const size_t size, void* nonnull out) {
+ssize_t connection_read(const Connection* nonnull self, const size_t size, void* nonnull out) {
     if (size == 0) return 0;
 
     uint8_t* dst = out;
@@ -35,15 +35,9 @@ static ssize_t connection_read_all(const Connection* nonnull self, const size_t 
     return (ssize_t)got;
 }
 
-
 static ssize_t connection_read_be(const Connection* nonnull self, const size_t size, uint64_t* nonnull out) {
-    if (size == 0 || size > sizeof(uint64_t)) {
-        errno = EINVAL;
-        return -1;
-    }
-
     uint8_t bytes[sizeof(uint64_t)];
-    const ssize_t code = connection_read_all(self, size, bytes);
+    const ssize_t code = connection_read(self, size, bytes);
     if (code <= 0) return code;
 
     uint64_t value = 0;
@@ -55,11 +49,31 @@ static ssize_t connection_read_be(const Connection* nonnull self, const size_t s
     return code;
 }
 
+ssize_t connection_write(const Connection* nonnull self, const size_t size, const void* data) {
+    return send(self->socket, data, size, 0);
+}
+
 static ssize_t connection_write_bytes_be(const Connection* nonnull self, const size_t size, const uint64_t value) {
     uint8_t bytes[sizeof(uint64_t)];
-    for (size_t i = 0; i < size; i++)
+    for (size_t i = 0; i < size; i++) {
         bytes[i] = (uint8_t)(value >> (8 * (size - 1 - i)));
-    return write(self->socket, bytes, size);
+    }
+
+    size_t total_written = 0;
+    while (total_written < size) {
+        const ssize_t written = write(self->socket, bytes + total_written, size - total_written);
+
+        if (written < 0) {
+            if (errno == EINTR) {
+                continue;
+            }
+            return -1;
+        }
+
+        total_written += (size_t)written;
+    }
+
+    return (ssize_t)total_written;
 }
 
 ssize_t connection_read_i8(const Connection* nonnull self, int8_t* nonnull out) {
@@ -122,7 +136,7 @@ ssize_t connection_read_str_utf16(const Connection* nonnull self, StringUTF16*no
     uint8_t* buffer = calloc(length, sizeof(uint8_t));
     if (!buffer) return -1;
 
-    if ((code = connection_read_all(self, length, buffer)) <= 0) {
+    if ((code = connection_read(self, length, buffer)) <= 0) {
         if (code < 0) {
             perror("Failed to read str 16BE bytes (Error)");
         } else {
@@ -159,7 +173,7 @@ ssize_t connection_read_str_utf8(const Connection* nonnull self, StringUTF8*nonn
     uint8_t* buffer = calloc(length, sizeof(uint8_t));
     if (!buffer) return -1;
 
-    if ((code = connection_read_all(self, length, buffer)) <= 0) {
+    if ((code = connection_read(self, length, buffer)) <= 0) {
         free(buffer);
         return code;
     }
@@ -228,14 +242,6 @@ ssize_t connection_write_uuid(const Connection* nonnull self, const UUID in) {
     if ((code = connection_write_i64(self, (int64_t)lsb)) <= 0) return code;
 
     return code;
-}
-
-ssize_t connection_read(const Connection* nonnull self, void *read_buffer, const size_t length) {
-    return read(self->socket, read_buffer, length);
-}
-
-ssize_t connection_write(const Connection* nonnull self, const void* data, const size_t length) {
-    return send(self->socket, data, length, 0);
 }
 
 void connection_shutdown(const Connection* nonnull con) {

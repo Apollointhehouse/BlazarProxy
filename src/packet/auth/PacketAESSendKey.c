@@ -33,8 +33,6 @@ static const Packet* PacketAESSendKey_read(const Connection* nonnull connection)
     packet->data = data;
     packet->v = PacketAESSendKey_vtable();
 
-    if (!data) return NULL;
-
     if (
         connection_read_str_utf8(connection, &data->key) <= 0
     ) {

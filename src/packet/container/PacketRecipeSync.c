@@ -38,7 +38,7 @@ static const Packet* PacketRecipeSync_read(const Connection* nonnull connection)
 
     if (
         connection_read_str_utf8(connection, &data->recipe) <= 0 ||
-        connection_read_i64(connection, &data->max_recipes) <= 0
+        connection_read_i64(connection, &data->max_recipes) < 0
     ) {
         PacketRecipeSync_destroy(packet);
         return NULL;
