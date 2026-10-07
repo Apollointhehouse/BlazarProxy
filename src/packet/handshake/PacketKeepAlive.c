@@ -5,9 +5,10 @@
 #include <stdlib.h>
 
 #include "packet/PacketFactory.h"
+#include "util/logging.h"
 
 static ssize_t PacketKeepAlive_handle(const Packet* nonnull packet, const ConnectionContext* nonnull ctx) {
-    printf("PacketKeepAlive()");
+    LOG_DEBUG("PacketKeepAlive()");
 
     return 1;
 }

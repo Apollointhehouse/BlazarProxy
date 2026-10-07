@@ -3,13 +3,14 @@
 #include <stdlib.h>
 #include "Connection.h"
 #include "packet/PacketFactory.h"
+#include "util/logging.h"
 #include "util/StringUTF16.h"
 
 static ssize_t PacketDisconnect_handle(const Packet* nonnull packet, const ConnectionContext* nonnull ctx) {
     const PacketDisconnect* data = packet->data;
 
     STRING_UTF8_TO_C_STR(reason, data->reason);
-    printf("PacketDisconnect(reason=\"%s\")\n", reason);
+    LOG_DEBUG("PacketDisconnect(reason=\"%s\")", reason);
 
     return 1;
 }

@@ -5,13 +5,14 @@
 #include <stdlib.h>
 
 #include "packet/PacketFactory.h"
+#include "util/logging.h"
 
 static ssize_t PacketTileEntityData_handle(const Packet* nonnull packet, const ConnectionContext* nonnull ctx) {
     const PacketTileEntityData* data = packet->data;
 
     BYTES_TO_HEX_STR(tag, data->tag.buffer, data->tag.size);
 
-    printf("PacketTileEntityData(tag=\"%s\")\n", tag);
+    LOG_DEBUG("PacketTileEntityData(tag=\"%s\")", tag);
 
     return 1;
 }

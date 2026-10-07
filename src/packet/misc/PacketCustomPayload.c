@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "packet/PacketFactory.h"
+#include "util/logging.h"
 
 static ssize_t PacketCustomPayload_handle(const Packet* nonnull packet, const ConnectionContext* nonnull ctx) {
     const PacketCustomPayload* data = packet->data;
@@ -10,7 +11,7 @@ static ssize_t PacketCustomPayload_handle(const Packet* nonnull packet, const Co
     BYTES_TO_HEX_STR(payload_str, data->data, data->size);
     STRING_UTF8_TO_C_STR(net_channel, data->net_channel);
 
-    printf("PacketCustomPayload(net_channel=\"%s\", size=%d, data=%s)\n",  net_channel, data->size, payload_str);
+    LOG_DEBUG("PacketCustomPayload(net_channel=\"%s\", size=%d, data=%s)",  net_channel, data->size, payload_str);
 
     return 1;
 }

@@ -5,13 +5,14 @@
 #include <stdlib.h>
 
 #include "packet/PacketFactory.h"
+#include "util/logging.h"
 
 static ssize_t PacketAESSendKey_handle(const Packet* nonnull packet, const ConnectionContext* nonnull ctx) {
     const PacketAESSendKey* data = packet->data;
 
     STRING_UTF8_TO_C_STR(key, data->key);
 
-    printf("PacketAESSendKey(key=\"%s\")\n",key);
+    LOG_DEBUG("PacketAESSendKey(key=\"%s\")",key);
 
     return 1;
 }

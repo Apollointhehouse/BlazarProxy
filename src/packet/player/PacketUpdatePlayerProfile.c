@@ -6,6 +6,7 @@
 #include <stdlib.h>
 
 #include "packet/PacketFactory.h"
+#include "util/logging.h"
 
 static ssize_t PacketUpdatePlayerProfile_handle(const Packet* nonnull packet, const ConnectionContext* nonnull ctx) {
     const PacketUpdatePlayerProfile* data = packet->data;
@@ -14,7 +15,7 @@ static ssize_t PacketUpdatePlayerProfile_handle(const Packet* nonnull packet, co
     STRING_UTF8_TO_C_STR(nickname, data->nickname);
     UUID_TO_C_STR(uuid, data->uuid);
 
-    printf(
+    LOG_DEBUG(
         "PacketUpdatePlayerProfile("
         "username=\"%s\", "
         "nickname=\"%s\", "
@@ -22,7 +23,7 @@ static ssize_t PacketUpdatePlayerProfile_handle(const Packet* nonnull packet, co
         "score=%d, "
         "chat_color=%d, "
         "is_online=%d, "
-        "is_operator=%d)\n",
+        "is_operator=%d)",
         username,
         uuid,
         nickname,

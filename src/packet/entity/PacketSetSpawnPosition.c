@@ -5,11 +5,12 @@
 #include <stdlib.h>
 
 #include "packet/PacketFactory.h"
+#include "util/logging.h"
 
 static ssize_t PacketSetSpawnPosition_handle(const Packet* nonnull packet, const ConnectionContext* nonnull ctx) {
     const PacketSetSpawnPosition* data = packet->data;
 
-    printf("PacketSetSpawnPosition(x=%d, y=%d, z=%d)\n",data->x, data->y, data->z);
+    LOG_DEBUG("PacketSetSpawnPosition(x=%d, y=%d, z=%d)",data->x, data->y, data->z);
 
     return 1;
 }

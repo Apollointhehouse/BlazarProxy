@@ -91,3 +91,5 @@ elseif(CMAKE_COMPILER_IS_GNUCC OR CMAKE_C_COMPILER_ID MATCHES "GNU")
             -Werror=analyzer-null-dereference
     )
 endif()
+
+target_compile_definitions(BlazarProxy PRIVATE DEBUG)

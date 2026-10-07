@@ -3,11 +3,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "packet/PacketFactory.h"
+#include "util/logging.h"
 
 static ssize_t PacketPlayerConfig_handle(const Packet* nonnull packet, const ConnectionContext* nonnull ctx) {
     const PacketPlayerConfig* data = packet->data;
 
-    printf("PacketPlayerConfig(entity_id=%d, config=%d)\n", data->entity_id, data->config);
+    LOG_DEBUG("PacketPlayerConfig(entity_id=%d, config=%d)", data->entity_id, data->config);
 
     return 1;
 }

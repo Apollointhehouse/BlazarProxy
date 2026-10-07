@@ -8,11 +8,12 @@
 #include <stdlib.h>
 
 #include "packet/PacketFactory.h"
+#include "util/logging.h"
 
 static ssize_t PacketSetTime_handle(const Packet* nonnull packet, const ConnectionContext* nonnull ctx) {
     const PacketSetTime* data = packet->data;
 
-    printf("PacketSetTime(time=%"PRId64")\n", data->time);
+    LOG_DEBUG("PacketSetTime(time=%"PRId64")", data->time);
 
     return 1;
 }

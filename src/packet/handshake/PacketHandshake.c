@@ -5,13 +5,14 @@
 #include <stdlib.h>
 
 #include "packet/PacketFactory.h"
+#include "util/logging.h"
 
 static ssize_t PacketHandshake_handle(const Packet* nonnull packet, const ConnectionContext* nonnull ctx) {
     const PacketHandshake* data = packet->data;
 
     STRING_UTF8_TO_C_STR(username, data->username);
 
-    printf("PacketHandshake(username=\"%s\")\n",username);
+    LOG_DEBUG("PacketHandshake(username=\"%s\")",username);
 
     return 1;
 }

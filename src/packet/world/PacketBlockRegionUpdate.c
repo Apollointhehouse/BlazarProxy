@@ -3,11 +3,12 @@
 #include <stdlib.h>
 #include "Connection.h"
 #include "packet/PacketFactory.h"
+#include "util/logging.h"
 
 static ssize_t PacketBlockRegionUpdate_handle(const Packet* nonnull packet, const ConnectionContext* nonnull ctx) {
     const PacketBlockRegionUpdate* data = packet->data;
 
-    printf(
+    LOG_DEBUG(
         "PacketBlockRegionUpdate("
         "x_position=%d, "
         "y_position=%d, "
@@ -15,7 +16,7 @@ static ssize_t PacketBlockRegionUpdate_handle(const Packet* nonnull packet, cons
         "x_size=%d, "
         "y_size=%d, "
         "z_size=%d, "
-        "chunk_size=%d)\n",
+        "chunk_size=%d)",
         data->x_position,
         data->y_position,
         data->z_position,

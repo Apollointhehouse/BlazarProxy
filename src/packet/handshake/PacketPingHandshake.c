@@ -5,6 +5,7 @@
 #include "ConnectionContext.h"
 #include "packet/handshake/PacketDisconnect.h"
 #include "packet/PacketFactory.h"
+#include "util/logging.h"
 #include "util/StringUTF16.h"
 
 #define PING_REPLY "\xA7" "1" "\0" "32769" "\0" "8.0.1" "\0" "Proxy Server" "\0" "0" "\0" "100"
@@ -15,14 +16,14 @@ static ssize_t PacketPingHandshake_handle(const Packet* nonnull packet, const Co
     STRING_UTF16_TO_C_STR(ping_host_string, data->ping_host_string);
     STRING_UTF16_TO_C_STR(hostname, data->hostname);
 
-    printf(
+    LOG_DEBUG(
         "PacketPingHandshake("
         "payload=%d, "
         "identifier=%d, "
         "ping_host_string=\"%s\", "
         "protocol_version=%d, "
         "hostname=\"%s\", "
-        "port=%d)\n",
+        "port=%d)",
         data->payload,
         data->identifier,
         ping_host_string,
@@ -97,8 +98,6 @@ static const Packet* nullable PacketPingHandshake_read(const Connection* nonnull
 
 static void PacketPingHandshake_write(const Packet* nonnull packet, const Connection* nonnull connection) {
     const PacketPingHandshake* data = packet->data;
-
-    STRING_UTF16_TO_C_STR(ping_host_string, data->ping_host_string);
 
     connection_write_i8(connection, (int8_t)data->payload);
     connection_write_i8(connection, (int8_t)data->identifier);

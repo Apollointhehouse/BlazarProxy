@@ -8,13 +8,14 @@
 #include <stdlib.h>
 
 #include "packet/PacketFactory.h"
+#include "util/logging.h"
 
 static ssize_t PacketRecipeSync_handle(const Packet* nonnull packet, const ConnectionContext* nonnull ctx) {
     const PacketRecipeSync* data = packet->data;
 
     STRING_UTF8_TO_C_STR(recipe, data->recipe);
 
-    printf("PacketRecipeSync(recipe=\"%s\", max_recipes=%"PRId64")\n",recipe, data->max_recipes);
+    LOG_DEBUG("PacketRecipeSync(recipe=\"%s\", max_recipes=%"PRId64")",recipe, data->max_recipes);
 
     return 1;
 }

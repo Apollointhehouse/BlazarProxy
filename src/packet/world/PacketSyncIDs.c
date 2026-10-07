@@ -5,11 +5,12 @@
 #include <stdlib.h>
 
 #include "packet/PacketFactory.h"
+#include "util/logging.h"
 
 static ssize_t PacketSyncIDs_handle(const Packet* nonnull packet, const ConnectionContext* nonnull ctx) {
     const PacketSyncIDs* data = packet->data;
 
-    printf("PacketSyncIDs(destination_id=%d, mapping_size=%d)\n",data->destination_id, data->mapping_size);
+    LOG_DEBUG("PacketSyncIDs(destination_id=%d, mapping_size=%d)",data->destination_id, data->mapping_size);
 
     return 1;
 }

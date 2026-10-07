@@ -8,6 +8,7 @@
 #include <stdlib.h>
 
 #include "packet/PacketFactory.h"
+#include "util/logging.h"
 
 static ssize_t PacketLogin_handle(const Packet* nonnull packet, const ConnectionContext* nonnull ctx) {
     const PacketLogin* data = packet->data;
@@ -17,7 +18,7 @@ static ssize_t PacketLogin_handle(const Packet* nonnull packet, const Connection
 
     UUID_TO_C_STR(uuid, data->uuid);
 
-    printf(
+    LOG_DEBUG(
         "PacketLogin("
         "proto_or_player_id=%d, "
         "username=\"%s\", "
@@ -26,7 +27,7 @@ static ssize_t PacketLogin_handle(const Packet* nonnull packet, const Connection
         "world_seed=%"PRId64", "
         "dimension_id=%d, "
         "world_type_id=%d, "
-        "packet_delay=%d)\n",
+        "packet_delay=%d)",
         data->proto_or_player_id,
         username,
         uuid,

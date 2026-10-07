@@ -6,12 +6,13 @@
 #include <stdlib.h>
 
 #include "packet/PacketFactory.h"
+#include "util/logging.h"
 
 static ssize_t PacketPlayerList_handle(const Packet* nonnull packet, const ConnectionContext* nonnull ctx) {
     const PacketPlayerList* data = packet->data;
 
-    printf(
-        "PacketPlayerList(count=%d)\n",
+    LOG_DEBUG(
+        "PacketPlayerList(count=%d)",
         data->count
     );
     return 1;
