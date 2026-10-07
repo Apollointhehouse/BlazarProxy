@@ -81,7 +81,10 @@ static ssize_t connection_write_bytes_be(const Connection* nonnull self, const s
 ssize_t connection_read_i8(const Connection* nonnull self, int8_t* nonnull out) {
     uint64_t v;
     const ssize_t code = connection_read_be(self, sizeof(int8_t), &v);
-    if (code <= 0) return code;
+    if (code <= 0) {
+        LOG_DEBUG("Failed to read int8_t (Connection Closed)");
+        return code;
+    }
     *out = (int8_t)v;
     return code;
 }
@@ -89,7 +92,10 @@ ssize_t connection_read_i8(const Connection* nonnull self, int8_t* nonnull out) 
 ssize_t connection_read_i16(const Connection* nonnull self, int16_t* nonnull out) {
     uint64_t v;
     const ssize_t code = connection_read_be(self, sizeof(int16_t), &v);
-    if (code <= 0) return code;
+    if (code <= 0) {
+        LOG_DEBUG("Failed to read int16_t (Connection Closed)");
+        return code;
+    }
     *out = (int16_t)v;
     return code;
 }
@@ -97,7 +103,10 @@ ssize_t connection_read_i16(const Connection* nonnull self, int16_t* nonnull out
 ssize_t connection_read_i32(const Connection* nonnull self, int32_t* nonnull out) {
     uint64_t v;
     const ssize_t code = connection_read_be(self, sizeof(int32_t), &v);
-    if (code <= 0) return code;
+    if (code <= 0) {
+        LOG_DEBUG("Failed to read int32_t (Connection Closed)");
+        return code;
+    }
     *out = (int32_t)v;
     return code;
 }
@@ -105,7 +114,10 @@ ssize_t connection_read_i32(const Connection* nonnull self, int32_t* nonnull out
 ssize_t connection_read_i64(const Connection* nonnull self, int64_t* nonnull out) {
     uint64_t v;
     const ssize_t code = connection_read_be(self, sizeof(int64_t), &v);
-    if (code <= 0) return code;
+    if (code <= 0) {
+        LOG_DEBUG("Failed to read int64_t (Connection Closed)");
+        return code;
+    }
     *out = (int64_t)v;
     return code;
 }
@@ -116,7 +128,7 @@ ssize_t connection_read_str_utf16(const Connection* nonnull self, StringUTF16*no
 
     if ((code = connection_read_i16(self, &length)) <= 0) {
         if (code < 0) {
-            perror("Failed to read str 16BE length (Error)");
+            perror("Failed to read str utf-16 length (Error)");
         } else {
             LOG_ERROR("Client disconnected while reading string length.");
         }
@@ -126,7 +138,7 @@ ssize_t connection_read_str_utf16(const Connection* nonnull self, StringUTF16*no
 
     if (length < 0) {
         errno = EINVAL;
-        LOG_SYS_ERROR("Failed to read string 16BE length (Error)");
+        LOG_SYS_ERROR("Failed to read string utf-16 length (Invalid negative size)");
         return 0;
     }
 
@@ -140,7 +152,7 @@ ssize_t connection_read_str_utf16(const Connection* nonnull self, StringUTF16*no
 
     if ((code = connection_read(self, length, buffer)) <= 0) {
         if (code < 0) {
-            LOG_SYS_ERROR("Failed to read str 16BE bytes (Error)");
+            LOG_SYS_ERROR("Failed to read str utf-16 bytes (Error)");
         } else {
             LOG_ERROR("Client disconnected while reading string bytes.");
         }
@@ -176,6 +188,11 @@ ssize_t connection_read_str_utf8(const Connection* nonnull self, StringUTF8*nonn
     if (!buffer) return -1;
 
     if ((code = connection_read(self, length, buffer)) <= 0) {
+        if (code < 0) {
+            LOG_SYS_ERROR("Failed to read str utf-8 bytes (Error)");
+        } else {
+            LOG_ERROR("Client disconnected while reading string bytes.");
+        }
         free(buffer);
         return code;
     }
