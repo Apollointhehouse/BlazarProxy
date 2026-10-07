@@ -42,12 +42,17 @@ static void PacketBlockRegionUpdate_destroy(const Packet* nonnull packet) {
 
 static const Packet* PacketBlockRegionUpdate_read(const Connection* nonnull connection) {
     PacketBlockRegionUpdate* data = calloc(1, sizeof(PacketBlockRegionUpdate));
+    if (!data) {
+        return NULL;
+    }
+
     Packet* packet = malloc(sizeof(Packet));
-    if (!packet) return NULL;
+    if (!packet) {
+        free(data);
+        return NULL;
+    }
     packet->data = data;
     packet->v = PacketBlockRegionUpdate_vtable();
-
-    if (!data) return NULL;
 
 
     if (
