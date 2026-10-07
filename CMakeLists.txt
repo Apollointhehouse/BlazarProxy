@@ -61,7 +61,11 @@ add_executable(BlazarProxy src/main.c
         src/packet/entity/PacketSetSpawnPosition.c
         include/packet/entity/PacketSetSpawnPosition.h
         include/packet/world/PacketSetTime.h
-        src/packet/world/PacketSetTime.c)
+        src/packet/world/PacketSetTime.c
+        src/packet/player/PacketUpdatePlayerProfile.c
+        include/packet/player/PacketUpdatePlayerProfile.h
+        include/packet/player/PacketPlayerList.h
+        src/packet/player/PacketPlayerList.c)
 
 include_directories(include)
 

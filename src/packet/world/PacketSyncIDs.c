@@ -55,7 +55,7 @@ static const Packet* PacketSyncIDs_read(const Connection* nonnull connection) {
 
     if (data->mapping_size <= 0) return packet;
 
-    data->mapping = calloc(1, data->mapping_size);
+    data->mapping = calloc(1, data->mapping_size * sizeof(StringUTF8*));
 
     if (!data->mapping) goto fail;
 

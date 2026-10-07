@@ -10,6 +10,8 @@
 #include "packet/handshake/PacketKeepAlive.h"
 #include "packet/misc/PacketCustomPayload.h"
 #include "packet/player/PacketPlayerConfig.h"
+#include "packet/player/PacketPlayerList.h"
+#include "packet/player/PacketUpdatePlayerProfile.h"
 #include "packet/world/PacketBlockRegionUpdate.h"
 #include "packet/world/PacketSetTime.h"
 #include "packet/world/PacketSyncIDs.h"
@@ -24,8 +26,10 @@ void register_packets() {
     register_packet(6, PacketSetSpawnPosition_factory());
     register_packet(36, PacketPlayerConfig_factory());
     register_packet(51, PacketBlockRegionUpdate_factory());
+    register_packet(72, PacketUpdatePlayerProfile_factory());
     register_packet(75, PacketRecipeSync_factory());
     register_packet(136, PacketAESSendKey_factory());
+    register_packet(138, PacketPlayerList_factory());
     register_packet(140, PacketTileEntityData_factory());
     register_packet(201, PacketSyncIDs_factory());
     register_packet(250, PacketCustomPayload_factory());
