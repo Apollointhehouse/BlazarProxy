@@ -4,7 +4,7 @@
 #include "nullability.h"
 
 typedef struct NBT {
-    int16_t size;
+    uint16_t size;
     uint8_t* buffer;
 } NBT;
 

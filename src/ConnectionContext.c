@@ -4,12 +4,13 @@
 
 #include "nullability.h"
 
-ConnectionContext* nullable connection_ctx_create(const Connection* sink, const Connection* source) {
+ConnectionContext* nullable connection_ctx_create(const Connection* sink, const Connection* source, const Direction direction) {
     ConnectionContext* nullable context = malloc(sizeof(ConnectionContext));
     if (!context) return NULL;
 
     context->source = source;
     context->sink = sink;
+    context->direction = direction;
 
     return context;
 }

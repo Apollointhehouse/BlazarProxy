@@ -20,6 +20,7 @@ static void PacketCustomPayload_destroy(const Packet* nonnull packet) {
     const PacketCustomPayload* data = packet->data;
 
     free(data->data);
+    if (data->net_channel) data->net_channel->destroy(data->net_channel);
     free((void*)data);
     free((void*)packet);
 }

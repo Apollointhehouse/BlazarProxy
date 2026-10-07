@@ -109,11 +109,12 @@ static void* packet_forwarding(void* nonnull args) {
 
     const Connection* source = ctx->source;
     const Connection* sink = ctx->sink;
+    const char* direction_name = Direction_Name[ctx->direction];
 
     uint8_t packet_id;
 
     while (connection_read_i8(source, (int8_t*)&packet_id) > 0) {
-        LOG_INFO("packet_id: %d", packet_id);
+        LOG_INFO("packet_id: %d, direction: %s", packet_id, direction_name);
 
         const PacketFactory* factory = get_packet_factory(packet_id);
         if (!factory) {
@@ -151,8 +152,8 @@ static void* bridge(void* nonnull arg) {
     ConnectionContext* nullable c2s_context = NULL;
     ConnectionContext* nullable s2c_context = NULL;
     pthread_t c2s_thread, s2c_thread;
-    int c2s_started = 0;
-    int s2c_started = 0;
+    int c2s_running = 0;
+    int s2c_running = 0;
 
     LOG_INFO("Accepted Connection!");
 
@@ -169,8 +170,8 @@ static void* bridge(void* nonnull arg) {
         goto cleanup;
     }
 
-    c2s_context = connection_ctx_create(client_con, server_con);
-    s2c_context = connection_ctx_create(server_con, client_con);
+    c2s_context = connection_ctx_create(client_con, server_con, DIRECTION_C2S);
+    s2c_context = connection_ctx_create(server_con, client_con, DIRECTION_S2C);
     if (!c2s_context || !s2c_context) {
         LOG_ERROR("Failed to create connection contexts");
         goto cleanup;
@@ -180,7 +181,7 @@ static void* bridge(void* nonnull arg) {
         LOG_ERROR("Failed to create C2S thread");
         goto cleanup;
     }
-    c2s_started = 1;
+    c2s_running = 1;
     c2s_context = NULL;
 
     if (pthread_create(&s2c_thread, NULL, packet_forwarding, s2c_context)) {
@@ -189,14 +190,12 @@ static void* bridge(void* nonnull arg) {
         connection_shutdown(server_con);
         goto cleanup;
     }
-    s2c_started = 1;
+    s2c_running = 1;
     s2c_context = NULL;
 
-    pthread_join(s2c_thread, NULL);
-
     cleanup:
-    if (s2c_started) pthread_join(s2c_thread, NULL);
-    if (c2s_started) pthread_join(c2s_thread, NULL);
+    if (s2c_running) pthread_join(s2c_thread, NULL);
+    if (c2s_running) pthread_join(c2s_thread, NULL);
     if (c2s_context) connection_ctx_destroy(c2s_context);
     if (s2c_context) connection_ctx_destroy(s2c_context);
     if (server_con) connection_destroy(server_con);

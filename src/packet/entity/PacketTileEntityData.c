@@ -10,7 +10,7 @@
 static ssize_t PacketTileEntityData_handle(const Packet* nonnull packet, const ConnectionContext* nonnull ctx) {
     const PacketTileEntityData* data = packet->data;
 
-    BYTES_TO_HEX_STR(tag, data->tag.buffer, data->tag.size);
+    BYTES_TO_HEX_STR(tag, data->tag->buffer, data->tag->size);
 
     LOG_DEBUG("PacketTileEntityData(tag=\"%s\")", tag);
 
@@ -20,7 +20,7 @@ static ssize_t PacketTileEntityData_handle(const Packet* nonnull packet, const C
 static void PacketTileEntityData_destroy(const Packet* nonnull packet) {
     const PacketTileEntityData* data = packet->data;
 
-    NBT_destroy(&data->tag);
+    if (data->tag) NBT_destroy(data->tag);
     free((void*)data);
     free((void*)packet);
 }
@@ -34,8 +34,10 @@ static const Packet* PacketTileEntityData_read(const Connection* nonnull connect
     packet->data = data;
     packet->v = PacketTileEntityData_vtable();
 
+    data->tag = calloc(1, sizeof(NBT));
+
     if (
-        connection_read_nbt(connection, &data->tag) <= 0
+        connection_read_nbt(connection, data->tag) <= 0
     ) {
         PacketTileEntityData_destroy(packet);
         return NULL;

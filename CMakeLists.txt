@@ -65,9 +65,19 @@ add_executable(BlazarProxy src/main.c
         src/packet/player/PacketUpdatePlayerProfile.c
         include/packet/player/PacketUpdatePlayerProfile.h
         include/packet/player/PacketPlayerList.h
-        src/packet/player/PacketPlayerList.c)
+        src/packet/player/PacketPlayerList.c
+        src/packet/entity/PacketAddMob.c
+        include/packet/entity/PacketAddMob.h
+        src/util/EntityDataItem.c
+        include/util/EntityDataItem.h
+        include/util/EntityDataItem.h
+        include/util/DynamicArray.h
+        include/util/Conversion.h)
 
 include_directories(include)
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -g -fno-omit-frame-pointer")
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=address")
 
 if(CMAKE_C_COMPILER_ID MATCHES "Clang")
     target_compile_options(BlazarProxy PRIVATE

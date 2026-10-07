@@ -5,6 +5,7 @@
 #include "packet/auth/PacketLogin.h"
 #include "packet/auth/PacketAESSendKey.h"
 #include "packet/container/PacketRecipeSync.h"
+#include "packet/entity/PacketAddMob.h"
 #include "packet/entity/PacketSetSpawnPosition.h"
 #include "packet/entity/PacketTileEntityData.h"
 #include "packet/handshake/PacketKeepAlive.h"
@@ -24,6 +25,7 @@ void register_packets() {
     register_packet(2, PacketHandshake_factory());
     register_packet(4, PacketSetTime_factory());
     register_packet(6, PacketSetSpawnPosition_factory());
+    register_packet(24, PacketAddMob_factory());
     register_packet(36, PacketPlayerConfig_factory());
     register_packet(51, PacketBlockRegionUpdate_factory());
     register_packet(72, PacketUpdatePlayerProfile_factory());

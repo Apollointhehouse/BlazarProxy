@@ -7,9 +7,12 @@
 #include "util/StringUTF16.h"
 #include "Connection.h"
 
+#include <string.h>
+
 #include "util/logging.h"
 #include "util/StringUTF8.h"
 #include "util/UUID.h"
+#include "util/Conversion.h"
 
 Connection* nullable connection_create(const int32_t new_socket) {
     Connection* args = malloc(sizeof(Connection));
@@ -122,6 +125,23 @@ ssize_t connection_read_i64(const Connection* nonnull self, int64_t* nonnull out
     return code;
 }
 
+ssize_t connection_read_float(const Connection* nonnull self, float* nonnull out) {
+    uint64_t v;
+    const ssize_t code = connection_read_be(self, sizeof(float), &v);
+    if (code <= 0) {
+        LOG_DEBUG("Failed to read int64_t (Connection Closed)");
+        return code;
+    }
+
+    UintToFloat value;
+
+    value.u = v;
+
+    *out = value.f;
+    return code;
+}
+
+
 ssize_t connection_read_str_utf16(const Connection* nonnull self, StringUTF16*nonnull *nonnull out) {
     int16_t length;
     ssize_t code;
@@ -166,10 +186,10 @@ ssize_t connection_read_str_utf16(const Connection* nonnull self, StringUTF16*no
 }
 
 ssize_t connection_read_str_utf8(const Connection* nonnull self, StringUTF8*nonnull *nonnull out) {
-    int16_t length;
+    uint16_t length;
     ssize_t code;
 
-    if ((code = connection_read_i16(self, &length)) <= 0) {
+    if ((code = connection_read_i16(self, (int16_t*)&length)) <= 0) {
         return code;
     }
 
@@ -219,7 +239,12 @@ ssize_t connection_read_uuid(const Connection* nonnull self, UUID* out) {
 ssize_t connection_read_nbt(const Connection* nonnull self, NBT* nonnull out) {
     ssize_t code;
 
-    if ((code = connection_read_i16(self, &out->size)) <= 0) return code;
+    if ((code = connection_read_i16(self, (int16_t*)&out->size)) <= 0) return code;
+
+    if (out->size < 0) {
+        LOG_SYS_ERROR("Failed to read nbt length (Invalid negative size)");
+        return code;
+    }
 
     out->buffer = calloc(1, out->size);
 
@@ -242,6 +267,14 @@ ssize_t connection_write_i32(const Connection* nonnull self, const int32_t in) {
 
 ssize_t connection_write_i64(const Connection* nonnull self, const int64_t in) {
     return connection_write_bytes_be(self, sizeof(int64_t), in);
+}
+
+ssize_t connection_write_float(const Connection* nonnull self, const float in) {
+    UintToFloat convert;
+
+    convert.f = in;
+
+    return connection_write_bytes_be(self, sizeof(float), convert.u);
 }
 
 ssize_t connection_write_str_utf16(const Connection* nonnull self, const StringUTF16* nonnull in) {
@@ -275,11 +308,14 @@ ssize_t connection_write_uuid(const Connection* nonnull self, const UUID in) {
     return code;
 }
 
-ssize_t connection_write_nbt(const Connection* nonnull self, const NBT in) {
+ssize_t connection_write_nbt(const Connection* nonnull self, const NBT* in) {
     ssize_t code;
 
-    if ((code = connection_write_i16(self, in.size)) <= 0) return code;
-    if ((code = connection_write(self, in.size, in.buffer)) <= 0) return code;
+    if ((code = connection_write_i16(self, in->size)) <= 0) return code;
+
+    if (in->size < 0) return code;
+
+    if ((code = connection_write(self, in->size, in->buffer)) <= 0) return code;
 
     return code;
 }
