@@ -4,6 +4,7 @@
 #include "packet/handshake/PacketHandshake.h"
 #include "packet/auth/PacketLogin.h"
 #include "packet/auth/PacketAESSendKey.h"
+#include "packet/container/PacketContainerSetContent.h"
 #include "packet/container/PacketRecipeSync.h"
 #include "packet/entity/PacketAddMob.h"
 #include "packet/entity/PacketSetSpawnPosition.h"
@@ -11,6 +12,7 @@
 #include "packet/handshake/PacketKeepAlive.h"
 #include "packet/misc/PacketCustomPayload.h"
 #include "packet/player/PacketMovePlayerPosRot.h"
+#include "packet/player/PacketPhotoMode.h"
 #include "packet/player/PacketPlayerConfig.h"
 #include "packet/player/PacketPlayerGamemode.h"
 #include "packet/player/PacketPlayerList.h"
@@ -36,9 +38,11 @@ void register_packets() {
     register_packet(51, PacketBlockRegionUpdate_factory());
     register_packet(72, PacketUpdatePlayerProfile_factory());
     register_packet(75, PacketRecipeSync_factory());
+    register_packet(104, PacketContainerSetContent_factory());
     register_packet(136, PacketAESSendKey_factory());
     register_packet(138, PacketPlayerList_factory());
     register_packet(140, PacketTileEntityData_factory());
+    register_packet(143, PacketPhotoMode_factory());
     register_packet(201, PacketSyncIDs_factory());
     register_packet(250, PacketCustomPayload_factory());
     register_packet(254, PacketPingHandshake_factory());

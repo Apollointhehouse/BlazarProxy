@@ -75,7 +75,9 @@ add_executable(BlazarProxy src/main.c
         include/util/Conversion.h
         src/packet/world/PacketChunkVisibility.c
         src/packet/player/PacketMovePlayerPosRot.c
-        src/packet/player/PacketPlayerGamemode.c)
+        src/packet/player/PacketPlayerGamemode.c
+        src/packet/container/PacketContainerSetContent.c
+        src/packet/player/PacketPhotoMode.c)
 
 include_directories(include)
 
