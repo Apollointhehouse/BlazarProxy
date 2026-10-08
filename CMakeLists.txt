@@ -73,7 +73,9 @@ add_executable(BlazarProxy src/main.c
         include/util/EntityDataItem.h
         include/util/DynamicArray.h
         include/util/Conversion.h
-        src/packet/world/PacketChunkVisibility.c)
+        src/packet/world/PacketChunkVisibility.c
+        src/packet/player/PacketMovePlayerPosRot.c
+        src/packet/player/PacketPlayerGamemode.c)
 
 include_directories(include)
 

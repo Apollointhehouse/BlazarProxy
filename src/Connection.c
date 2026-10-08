@@ -141,6 +141,22 @@ ssize_t connection_read_float(const Connection* nonnull self, float* nonnull out
     return code;
 }
 
+ssize_t connection_read_double(const Connection* nonnull self, double* nonnull out) {
+    uint64_t v;
+    const ssize_t code = connection_read_be(self, sizeof(double), &v);
+    if (code <= 0) {
+        LOG_DEBUG("Failed to read int64_t (Connection Closed)");
+        return code;
+    }
+
+    UintToDouble value;
+
+    value.u = v;
+
+    *out = value.d;
+    return code;
+}
+
 
 ssize_t connection_read_str_utf16(const Connection* nonnull self, StringUTF16*nonnull *nonnull out) {
     int16_t length;
@@ -275,6 +291,14 @@ ssize_t connection_write_float(const Connection* nonnull self, const float in) {
     convert.f = in;
 
     return connection_write_bytes_be(self, sizeof(float), convert.u);
+}
+
+ssize_t connection_write_double(const Connection* nonnull self, const double in) {
+    UintToDouble convert;
+
+    convert.d = in;
+
+    return connection_write_bytes_be(self, sizeof(double), convert.u);
 }
 
 ssize_t connection_write_str_utf16(const Connection* nonnull self, const StringUTF16* nonnull in) {

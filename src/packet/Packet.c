@@ -10,7 +10,9 @@
 #include "packet/entity/PacketTileEntityData.h"
 #include "packet/handshake/PacketKeepAlive.h"
 #include "packet/misc/PacketCustomPayload.h"
+#include "packet/player/PacketMovePlayerPosRot.h"
 #include "packet/player/PacketPlayerConfig.h"
+#include "packet/player/PacketPlayerGamemode.h"
 #include "packet/player/PacketPlayerList.h"
 #include "packet/player/PacketUpdatePlayerProfile.h"
 #include "packet/world/PacketBlockRegionUpdate.h"
@@ -26,8 +28,10 @@ void register_packets() {
     register_packet(2, PacketHandshake_factory());
     register_packet(4, PacketSetTime_factory());
     register_packet(6, PacketSetSpawnPosition_factory());
+    register_packet(13, PacketMovePlayerPosRot_factory());
     register_packet(24, PacketAddMob_factory());
     register_packet(36, PacketPlayerConfig_factory());
+    register_packet(41, PacketPlayerGamemode_factory());
     register_packet(50, PacketChunkVisibility_factory());
     register_packet(51, PacketBlockRegionUpdate_factory());
     register_packet(72, PacketUpdatePlayerProfile_factory());

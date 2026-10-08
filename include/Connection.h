@@ -24,6 +24,7 @@ ssize_t connection_read_i16(const Connection* nonnull self, int16_t* nonnull out
 ssize_t connection_read_i32(const Connection* nonnull self, int32_t* nonnull out);
 ssize_t connection_read_i64(const Connection* nonnull self, int64_t* nonnull out);
 ssize_t connection_read_float(const Connection* nonnull self, float* nonnull out);
+ssize_t connection_read_double(const Connection* nonnull self, double* nonnull out);
 ssize_t connection_read_str_utf16(const Connection* nonnull self, StringUTF16*nonnull *nonnull out);
 ssize_t connection_read_str_utf8(const Connection* nonnull self, StringUTF8*nonnull *nonnull out);
 ssize_t connection_read_uuid(const Connection* nonnull self, UUID* nonnull out);
@@ -34,6 +35,7 @@ ssize_t connection_write_i16(const Connection* nonnull self, int16_t in);
 ssize_t connection_write_i32(const Connection* nonnull self, int32_t in);
 ssize_t connection_write_i64(const Connection* nonnull self, int64_t in);
 ssize_t connection_write_float(const Connection* nonnull self, float in);
+ssize_t connection_write_double(const Connection* nonnull self, double in);
 ssize_t connection_write_str_utf16(const Connection* nonnull self, const StringUTF16* nonnull in);
 ssize_t connection_write_str_utf8(const Connection* nonnull self, const StringUTF8* nonnull in);
 ssize_t connection_write_uuid(const Connection* nonnull self, UUID in);

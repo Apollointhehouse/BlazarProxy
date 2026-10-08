@@ -149,8 +149,8 @@ static void* packet_forwarding(void* nonnull args) {
 static void* bridge(void* nonnull arg) {
     const Connection* client_con = arg;
     Connection* nullable server_con = NULL;
+    ConnectionContext* nullable s2c_conetxt = NULL;
     ConnectionContext* nullable c2s_context = NULL;
-    ConnectionContext* nullable s2c_context = NULL;
     pthread_t c2s_thread, s2c_thread;
     int c2s_running = 0;
     int s2c_running = 0;
@@ -170,34 +170,34 @@ static void* bridge(void* nonnull arg) {
         goto cleanup;
     }
 
-    c2s_context = connection_ctx_create(client_con, server_con, DIRECTION_C2S);
-    s2c_context = connection_ctx_create(server_con, client_con, DIRECTION_S2C);
-    if (!c2s_context || !s2c_context) {
+    s2c_conetxt = connection_ctx_create(client_con, server_con, DIRECTION_S2C);
+    c2s_context = connection_ctx_create(server_con, client_con, DIRECTION_C2S);
+    if (!s2c_conetxt || !c2s_context) {
         LOG_ERROR("Failed to create connection contexts");
         goto cleanup;
     }
 
-    if (pthread_create(&c2s_thread, NULL, packet_forwarding, c2s_context)) {
-        LOG_ERROR("Failed to create C2S thread");
+    if (pthread_create(&c2s_thread, NULL, packet_forwarding, s2c_conetxt)) {
+        LOG_ERROR("Failed to create S2C thread");
         goto cleanup;
     }
     c2s_running = 1;
-    c2s_context = NULL;
+    s2c_conetxt = NULL;
 
-    if (pthread_create(&s2c_thread, NULL, packet_forwarding, s2c_context)) {
-        LOG_ERROR("Failed to create S2C thread");
+    if (pthread_create(&s2c_thread, NULL, packet_forwarding, c2s_context)) {
+        LOG_ERROR("Failed to create C2S thread");
         connection_shutdown(client_con);
         connection_shutdown(server_con);
         goto cleanup;
     }
     s2c_running = 1;
-    s2c_context = NULL;
+    c2s_context = NULL;
 
     cleanup:
     if (s2c_running) pthread_join(s2c_thread, NULL);
     if (c2s_running) pthread_join(c2s_thread, NULL);
+    if (s2c_conetxt) connection_ctx_destroy(s2c_conetxt);
     if (c2s_context) connection_ctx_destroy(c2s_context);
-    if (s2c_context) connection_ctx_destroy(s2c_context);
     if (server_con) connection_destroy(server_con);
     connection_destroy(client_con);
 
