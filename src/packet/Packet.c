@@ -19,6 +19,7 @@
 #include "packet/player/PacketUpdatePlayerProfile.h"
 #include "packet/world/PacketBlockRegionUpdate.h"
 #include "packet/world/PacketChunkVisibility.h"
+#include "packet/world/PacketGameRule.h"
 #include "packet/world/PacketSetTime.h"
 #include "packet/world/PacketSyncIDs.h"
 
@@ -38,6 +39,7 @@ void register_packets() {
     register_packet(51, PacketBlockRegionUpdate_factory());
     register_packet(72, PacketUpdatePlayerProfile_factory());
     register_packet(75, PacketRecipeSync_factory());
+    register_packet(74, PacketGameRule_factory());
     register_packet(104, PacketContainerSetContent_factory());
     register_packet(136, PacketAESSendKey_factory());
     register_packet(138, PacketPlayerList_factory());
