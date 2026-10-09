@@ -6,7 +6,7 @@ typedef enum Direction {
     DIRECTION_C2S, DIRECTION_S2C
 } Direction;
 
-static char* Direction_Name[] = { "C2S", "S2C" };
+static char* nonnull Direction_Name[2] = { "C2S", "S2C" };
 
 typedef struct ConnectionContext {
     const Connection* nonnull sink;

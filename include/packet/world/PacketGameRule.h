@@ -2,7 +2,7 @@
 #include "packet/Packet_VTable.h"
 
 typedef struct PacketGameRule {
-    NBT* tag;
+    NBT* nonnull tag;
 } PacketGameRule;
 
 const Packet_VTable* nonnull PacketGameRule_vtable();

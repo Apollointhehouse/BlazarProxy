@@ -82,7 +82,11 @@ add_executable(BlazarProxy src/main.c
         src/packet/world/PacketGameRule.c
         src/packet/chat/PacketCommandManager.c
         include/packet/chat/PacketCommandManager.h
-        src/packet/player/PacketSetHeldObject.c)
+        src/packet/player/PacketSetHeldObject.c
+        include/packet/player/PacketSetEquippedItem.h
+        src/packet/player/PacketSetEquippedItem.c
+        include/packet/player/PacketUpdatePlayerState.h
+        src/packet/player/PacketUpdatePlayerState.c)
 
 include_directories(include)
 

@@ -39,7 +39,7 @@ ssize_t connection_write_double(const Connection* nonnull self, double in);
 ssize_t connection_write_str_utf16(const Connection* nonnull self, const StringUTF16* nonnull in);
 ssize_t connection_write_str_utf8(const Connection* nonnull self, const StringUTF8* nonnull in);
 ssize_t connection_write_uuid(const Connection* nonnull self, UUID in);
-ssize_t connection_write_nbt(const Connection* nonnull self, const NBT* in);
+ssize_t connection_write_nbt(const Connection* nonnull self, const NBT* nonnull in);
 
 ssize_t connection_write(const Connection* nonnull self, size_t size, const void* nonnull data);
 

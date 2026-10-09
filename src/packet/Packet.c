@@ -17,8 +17,10 @@
 #include "packet/player/PacketPlayerConfig.h"
 #include "packet/player/PacketPlayerGamemode.h"
 #include "packet/player/PacketPlayerList.h"
+#include "packet/player/PacketSetEquippedItem.h"
 #include "packet/player/PacketSetHeldObject.h"
 #include "packet/player/PacketUpdatePlayerProfile.h"
+#include "packet/player/PacketUpdatePlayerState.h"
 #include "packet/world/PacketBlockRegionUpdate.h"
 #include "packet/world/PacketChunkVisibility.h"
 #include "packet/world/PacketGameRule.h"
@@ -27,13 +29,24 @@
 
 static const PacketFactory* nullable packets[256];
 
+static void register_packet(const uint8_t id, const PacketFactory* nonnull factory) {
+    if (packets[id]) {
+        printf("Packet factory already registered for id: %d\n", id);
+        return;
+    }
+
+    packets[id] = factory;
+}
+
 void register_packets() {
     register_packet(0, PacketKeepAlive_factory());
     register_packet(1, PacketLogin_factory());
     register_packet(2, PacketHandshake_factory());
     register_packet(4, PacketSetTime_factory());
+    register_packet(5, PacketSetEquippedItem_factory());
     register_packet(6, PacketSetSpawnPosition_factory());
     register_packet(13, PacketMovePlayerPosRot_factory());
+    register_packet(19, PacketUpdatePlayerState_factory());
     register_packet(24, PacketAddMob_factory());
     register_packet(27, PacketSetHeldObject_factory());
     register_packet(36, PacketPlayerConfig_factory());
@@ -61,13 +74,4 @@ const PacketFactory* nullable get_packet_factory(const uint8_t id) {
     if (!factory->read) return NULL;
 
     return factory;
-}
-
-void register_packet(const uint8_t id, const PacketFactory* nonnull factory) {
-    if (packets[id]) {
-        printf("Packet factory already registered for id: %d\n", id);
-        return;
-    }
-
-    packets[id] = factory;
 }

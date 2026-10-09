@@ -7,9 +7,8 @@ typedef struct PacketFactory PacketFactory;
 
 typedef struct Packet {
     const Packet_VTable* nonnull v;
-    const void* data;
+    const void* nullable data;
 } Packet;
 
 void register_packets();
 const PacketFactory* nullable get_packet_factory(uint8_t id);
-void register_packet(uint8_t id, const PacketFactory* nonnull factory);

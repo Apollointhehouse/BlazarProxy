@@ -10,8 +10,8 @@ typedef struct PacketAddMob {
     int32_t z;
     int8_t yaw;
     int8_t pitch;
-    DynamicArray_EntityDataItem* unpacked_data;
-    StringUTF8* nickname;
+    DynamicArray_EntityDataItem* nonnull unpacked_data;
+    StringUTF8* nonnull nickname;
     int8_t chat_color;
 } PacketAddMob;
 
