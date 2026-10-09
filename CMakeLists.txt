@@ -88,7 +88,14 @@ add_executable(BlazarProxy src/main.c
         include/packet/player/PacketUpdatePlayerState.h
         src/packet/player/PacketUpdatePlayerState.c
         include/packet/player/PacketAddPlayer.h
-        src/packet/player/PacketAddPlayer.c)
+        src/packet/player/PacketAddPlayer.c
+        include/packet/player/PacketSetHotbarOffset.h
+        src/packet/player/PacketSetHotbarOffset.c
+        src/packet/player/PacketSetCarriedItem.c
+        include/packet/player/PacketSetCarriedItem.h
+        include/packet/entity/PacketRemoveEntity.h
+        src/packet/entity/PacketRemoveEntity.c
+        src/packet/entity/PacketSetEntityData.c)
 
 include_directories(include)
 

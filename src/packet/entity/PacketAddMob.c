@@ -16,7 +16,7 @@ static ssize_t PacketAddMob_handle(const Packet* nonnull packet, const Connectio
 
     LOG_DEBUG("PacketAddMob(id=%d, type=%d, x=%d, y=%d, z=%d, yaw=%d, pitch=%d, unpacked_items_count=%d, nickname=\"%s\", chat_color=%d)",
               data->id,
-              data->type,
+              data->entity_id,
               data->x,
               data->y,
               data->z,
@@ -55,7 +55,7 @@ static const Packet* PacketAddMob_read(const Connection* nonnull connection) {
 
     if (
         connection_read_i32(connection, &data->id) <= 0 ||
-        connection_read_i16(connection, &data->type) <= 0 ||
+        connection_read_i16(connection, &data->entity_id) <= 0 ||
         connection_read_i32(connection, &data->x) <= 0 ||
         connection_read_i32(connection, &data->y) <= 0 ||
         connection_read_i32(connection, &data->z) <= 0 ||
@@ -76,7 +76,7 @@ static void PacketAddMob_write(const Packet* nonnull packet, const Connection* n
     const PacketAddMob* data = packet->data;
 
     connection_write_i32(connection, data->id);
-    connection_write_i16(connection, data->type);
+    connection_write_i16(connection, data->entity_id);
     connection_write_i32(connection, data->x);
     connection_write_i32(connection, data->y);
     connection_write_i32(connection, data->z);

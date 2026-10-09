@@ -8,6 +8,8 @@
 #include "packet/container/PacketContainerSetContent.h"
 #include "packet/container/PacketRecipeSync.h"
 #include "packet/entity/PacketAddMob.h"
+#include "packet/entity/PacketRemoveEntity.h"
+#include "packet/entity/PacketSetEntityData.h"
 #include "packet/entity/PacketSetSpawnPosition.h"
 #include "packet/entity/PacketTileEntityData.h"
 #include "packet/handshake/PacketKeepAlive.h"
@@ -18,8 +20,10 @@
 #include "packet/player/PacketPlayerConfig.h"
 #include "packet/player/PacketPlayerGamemode.h"
 #include "packet/player/PacketPlayerList.h"
+#include "packet/player/PacketSetCarriedItem.h"
 #include "packet/player/PacketSetEquippedItem.h"
 #include "packet/player/PacketSetHeldObject.h"
+#include "packet/player/PacketSetHotbarOffset.h"
 #include "packet/player/PacketUpdatePlayerProfile.h"
 #include "packet/player/PacketUpdatePlayerState.h"
 #include "packet/world/PacketBlockRegionUpdate.h"
@@ -47,11 +51,14 @@ void register_packets() {
     register_packet(5, PacketSetEquippedItem_factory());
     register_packet(6, PacketSetSpawnPosition_factory());
     register_packet(13, PacketMovePlayerPosRot_factory());
+    register_packet(16, PacketSetCarriedItem_factory());
     register_packet(19, PacketUpdatePlayerState_factory());
     register_packet(20, PacketAddPlayer_factory());
     register_packet(24, PacketAddMob_factory());
     register_packet(27, PacketSetHeldObject_factory());
+    register_packet(29, PacketRemoveEntity_factory());
     register_packet(36, PacketPlayerConfig_factory());
+    register_packet(40, PacketSetEntityData_factory());
     register_packet(41, PacketPlayerGamemode_factory());
     register_packet(50, PacketChunkVisibility_factory());
     register_packet(51, PacketBlockRegionUpdate_factory());
@@ -59,6 +66,7 @@ void register_packets() {
     register_packet(75, PacketRecipeSync_factory());
     register_packet(74, PacketGameRule_factory());
     register_packet(104, PacketContainerSetContent_factory());
+    register_packet(108, PacketSetHotbarOffset_factory());
     register_packet(120, PacketCommandManager_factory());
     register_packet(136, PacketAESSendKey_factory());
     register_packet(138, PacketPlayerList_factory());

@@ -4,7 +4,7 @@
 
 typedef struct PacketAddMob {
     int32_t id;
-    int16_t type;
+    int16_t entity_id;
     int32_t x;
     int32_t y;
     int32_t z;
