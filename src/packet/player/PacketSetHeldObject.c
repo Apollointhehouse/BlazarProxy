@@ -32,12 +32,23 @@ static const Packet* PacketSetHeldObject_read(const Connection* nonnull connecti
 
     data->object_tag = malloc(sizeof(NBT));
 
+    int8_t has_nbt;
+
     if (
         connection_read_i32(connection, &data->entity_id) <= 0 ||
-        connection_read_nbt(connection, data->object_tag) <= 0
+        connection_read_i8(connection, &has_nbt) <= 0
     ) {
         PacketSetHeldObject_destroy(packet);
         return NULL;
+    }
+
+    if (has_nbt) {
+        if (connection_read_nbt(connection, data->object_tag) <= 0) {
+            PacketSetHeldObject_destroy(packet);
+            return NULL;
+        }
+    } else {
+        data->object_tag = NULL;
     }
 
     return packet;
@@ -47,7 +58,13 @@ static void PacketSetHeldObject_write(const Packet* nonnull packet, const Connec
     const PacketSetHeldObject* data = packet->data;
 
     connection_write_i32(connection, data->entity_id);
-    connection_write_nbt(connection, data->object_tag);
+
+    if (data->object_tag) {
+        connection_write_i8(connection, 1);
+        connection_write_nbt(connection, data->object_tag);
+    } else {
+        connection_write_i8(connection, 0);
+    }
 }
 
 const Packet_VTable* nonnull PacketSetHeldObject_vtable() {

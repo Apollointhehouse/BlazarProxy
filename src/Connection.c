@@ -159,10 +159,10 @@ ssize_t connection_read_double(const Connection* nonnull self, double* nonnull o
 
 
 ssize_t connection_read_str_utf16(const Connection* nonnull self, StringUTF16*nonnull *nonnull out) {
-    int16_t length;
+    uint16_t length;
     ssize_t code;
 
-    if ((code = connection_read_i16(self, &length)) <= 0) {
+    if ((code = connection_read_i16(self, (int16_t*)&length)) <= 0) {
         if (code < 0) {
             perror("Failed to read str utf-16 length (Error)");
         } else {

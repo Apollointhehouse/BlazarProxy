@@ -12,6 +12,7 @@
 #include "packet/entity/PacketTileEntityData.h"
 #include "packet/handshake/PacketKeepAlive.h"
 #include "packet/misc/PacketCustomPayload.h"
+#include "packet/player/PacketAddPlayer.h"
 #include "packet/player/PacketMovePlayerPosRot.h"
 #include "packet/player/PacketPhotoMode.h"
 #include "packet/player/PacketPlayerConfig.h"
@@ -47,6 +48,7 @@ void register_packets() {
     register_packet(6, PacketSetSpawnPosition_factory());
     register_packet(13, PacketMovePlayerPosRot_factory());
     register_packet(19, PacketUpdatePlayerState_factory());
+    register_packet(20, PacketAddPlayer_factory());
     register_packet(24, PacketAddMob_factory());
     register_packet(27, PacketSetHeldObject_factory());
     register_packet(36, PacketPlayerConfig_factory());

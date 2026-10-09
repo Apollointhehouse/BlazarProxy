@@ -26,7 +26,10 @@ static const Packet* PacketSetEquippedItem_read(const Connection* nonnull connec
     if (!data) return NULL;
 
     Packet* packet = calloc(1, sizeof(Packet));
-    if (!packet) return NULL;
+    if (!packet) {
+        free(data);
+        return NULL;
+    }
     packet->data = data;
     packet->v = PacketSetEquippedItem_vtable();
 

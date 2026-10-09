@@ -69,9 +69,6 @@ void DynamicArray_##name##_grow(DynamicArray_##name* array) { \
 } \
  \
 void DynamicArray_##name##_destroy(DynamicArray_##name* array) { \
-    for (int i = 0; i < array->size; i++) { \
-        if (array->data[i]) free(array->data[i]); \
-    } \
     free(array->data); \
     free(array); \
 } \
